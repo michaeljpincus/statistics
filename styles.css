@@ -1,0 +1,26 @@
+.navbar {
+  background-color: #1a76bd!important;
+}
+.navbar-brand, .navbar-nav .nav-link {
+  color: #a8d1f0 !important; /* or whatever contrasts well */
+}
+
+.navbar-brand:hover,
+.navbar-nav .nav-link:hover {
+  color: #cee4f5 !important;
+}
+
+code:not(pre code) {
+  color: #d43a02 !important;
+}
+
+.sidebar nav[role="doc-toc"] ul > li > a:hover,
+.sidebar nav[role="doc-toc"] ul > li > ul > li > a:hover {
+  color: #1a76bd !important;
+  border-left: 1px solid #1a76bd;
+}
+
+.sidebar nav[role=doc-toc] ul>li>a.active, .sidebar nav[role=doc-toc] ul>li>ul>li>a.active {
+    border-left: 1px solid #1a76bd;
+    color: #1a76bd !important;
+}
