@@ -6,8 +6,6 @@ format: html
 editor: visual
 ---
 
-# Lecture 3: Correlation and Regression Analysis
-
 ## Sample Correlation and Covariance
 
 ### Covariance

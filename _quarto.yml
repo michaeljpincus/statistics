@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  title: "Stats Class Notes"
+  title: "Geospatial Statistics Portfolio"
   navbar:
     left:
       - href: index.qmd

@@ -6,10 +6,6 @@ format: html
 editor: visual
 ---
 
-# Week 2
-
-## Lecture 1
-
 ### Setting the working directory
 
 You can set the working directory using this command:
