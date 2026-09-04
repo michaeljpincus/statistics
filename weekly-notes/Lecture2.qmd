@@ -284,5 +284,3 @@ summary(a)
 
 summary(factor(a))
 ```
-
-The variable $r$ test
