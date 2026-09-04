@@ -2,4 +2,4 @@
 title: "Welcome"
 ---
 
-This is the course notes site for Geospatial Statistics.
+Hello! This is my site where you can see my weekly notes and labs for my Geospatial Statistics Course, taken in the Master of Urban Spatial Analytics Program at the University of Pennsylvania.
