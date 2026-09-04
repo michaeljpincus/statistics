@@ -1,0 +1,125 @@
+---
+title: "Lecture 3"
+description: "Correlation and Regression Analysis"
+date: "09-02-2026"
+format: html
+editor: visual
+---
+
+# Lecture 3: Correlation and Regression Analysis
+
+## Sample Correlation and Covariance
+
+### Covariance
+
+A measure of how much $X$ and $Y$ change together.
+
+The units of $\text{Cov}(X, Y)$ are those of $X$ multiplied by those of $Y$
+
+The covariance of a variable $X$ with itself is simply the variance of $X$
+
+### Correlation
+
+A standardized measure of the strength of the relationship between variables, known as correlation $r$ is used instead.
+
+- Value of $r$ doesn't depend on which variable is $x$ and which is labeled $y$
+
+- Value of $r$ is independent of units of measurement of $x$ and $y$
+
+- $1 \le r \le 1$
+
+- $r=1$ if all $(x_i, y_i)$ pairs lie on a straight line with positive slope and $r=-1$ if all $(x_i,y_1)$ pairs lie on a straight line with negative slope
+
+- $r=0$ indicates a lack of linear relationship between the variables
+
+## Sample Correlation Calculation
+
+$$r = \frac{1}{n-1}\sum_{i=1}^n(\frac{x_i-\bar{x}}{s_x})(\frac{y_i-\bar{y}}{s_y})$$
+
+In a dataset with $n$ observations, the correlation coefficient $r$ between variables $x$ and $y$ can be calculated using this equation.
+
+## Important Reminders
+
+A correlation of a variable and itself is always $1$.
+
+In practice, we rarely see perfect positive or negative correlations.
+
+High correlation and low correlation largely depends on the field. Devore states:
+
+- $0 \le \lvert r \rvert \le 0.5$: weak correlation
+
+- $0.8 \le \lvert r \rvert \le 0.1$: strong correlation
+
+## Pearson Correlation: Assumptions
+
+- Variables should be continuous
+
+- Linear relationship between variables
+
+- No vast outliers
+
+- The variables should have a **bivariate normal distribution**
+
+## Sample vs. Population Correlation Coefficient
+
+The sample correlation coefficient $r$ is an estimator of the population correlation coefficient $\rho$.
+
+$\rho$ becomes a measure of how strongly related $X$ and $Y$ are in that population.
+
+## Hypothesis Testing
+
+We ask: how likely is it to obtain sample data where the correlation coefficient is at least as large as the one we see if, in reality, this sample comes from a population where the correlation coefficient is zero?
+
+Goal of statistics: to use sample data to make inferences about the population from which the sample comes.
+
+- For instance the statistic $\bar{X}$, representing the sample mean, is a **point estimator** of the population mean $\mu$ and the value of the sample mean $\bar{x}$ is a **point estimate** of the population mean $\mu$.
+
+- Sample standard deviation $S$ is a point estimator of the population standard deviation $\sigma$.
+
+- Sample correlation coefficient $R$ is a point estimator of the population correlation $\rho$.
+
+- Sample regression coefficients $\hat{\beta_i}$ are point estimators of the corresponding population regression coefficients $\beta_i$.
+
+While we only deal with one sample in practice, we need to realize that many possible samples may be drawn from the population, and in each sample that can be drawn, a different value of the sample statistics can be obtained. So, sample statistics are random variables with distributions of their own.
+
+## Procedure for testing $H_0: \rho = 0$
+
+$$T = \frac{R-\mu_R}{s_R} $$
+
+When $H_0$ is true, $T$ has a $t$ distribution with $n-2$ degrees of freedom.
+
+**Alternative Hypothesis**
+
+$H_a: \rho>0$
+
+$H_a: \rho<0$
+
+$H_a: \rho \ne 0$
+
+**Rejection Region for Level** $\alpha$ **Test**
+
+$t \ge t_{\alpha, n-2}$
+
+$t \le -t_{\alpha, n-2}$
+
+either $t \ge t_{\alpha, n-2}$ or $t \le -t_{\alpha, n-2}$
+
+## Spearman Correlation Coefficient
+
+When the assumptions of bivariate normality clearly do not hold, we may want to assess the relationship between two variables (which may be continuous or ordinal) using a non-parametric method called Spearman Correlation.
+
+The Spearman correlation coefficient is simply the Pearson correlation of the rank variables that are calculated from the original variables.
+
+**Basically, we are just ranking the variables and finding the** $r$ **based on that**
+
+## In R
+
+`options(scipen=999)`: Avoids getting scientific notation
+
+`cor(data$X, data$Y, method='pearson')`: Finds Pearson's $r$
+
+`cor(data$X, data$Y, method='spearman')`: Finds the Spearman correlation coefficient
+
+`cor(data)`: Correlation matrix
+
+`cor.test(data$X, data$Y, method=('pearson'))`: Tests the significance of the correlation between $X$ and $Y$

@@ -1,0 +1,292 @@
+---
+title: "Lecture 2"
+description: "Getting Started with R"
+date: "08-31-2026"
+format: html
+editor: visual
+---
+
+# Week 2
+
+## Lecture 1
+
+### Setting the working directory
+
+You can set the working directory using this command:
+
+```{r}
+#setwd(...) 
+```
+
+You can see the working directory using this command:
+
+```{r}
+getwd()
+```
+
+### Review of Data Types
+
+An $r \times c$ **matrix** is a rectangular array of symbols arranged in $r$ rows and $c$ columns.
+
+$$A = \begin{bmatrix} 1 & 2 \\ 6 & 3 \end{bmatrix}$$
+
+A **column vector** is an $r \times 1$ matrix, a matrix with only one column.
+
+$$A = \begin{bmatrix} 1 \\ 6
+ \end{bmatrix}$$
+
+A **row vector** is a $1 \times c$ matrix, a matrix with only one row.
+
+$$A = \begin{bmatrix} 7&12
+ \end{bmatrix}$$
+
+A $1 \times 1$ matrix is called a scalar, but it's just an ordinary number.
+
+$$A = [4]$$
+
+To define a vector in R with the numbers `3, 4, 5`, we can use the function `c()` which is short for `concatenate`:
+
+```{r}
+b = c(3,4,5)
+b
+```
+
+### Functions
+
+There are many different kinds of functions in R:
+
+```{r}
+mean(b)
+sum(b)
+```
+
+The following code generates and plots 10 random numbers from the standard normal distribution:
+
+```{r}
+x <- round(rnorm(10, mean=0, sd=1), 3)
+plot(x)
+```
+
+### Vectors
+
+```{r}
+vec1 = c(1,2,3,4,5,6)
+vec1
+
+vec1[5]
+
+vec1[3] = 12 
+vec1
+
+vec2 = seq(from=0, to=1, by=0.25)
+vec2
+
+sum(vec1)
+vec1 + vec2
+```
+
+### Matrices
+
+Matrices are like 2-dimensional vectors (or like data tables)
+
+```{r}
+mat = matrix(data=c(9,2,3,4,5,6), ncol=3)
+mat
+```
+
+The argument `data` specifies which numbers should be in the matrix. We use either `ncol` to specify the number of column or `nrow` to specify the number of rows.
+
+Matrix-operations are similar to vector operations:
+
+```{r}
+mat[1,2]
+
+r2 <- mat[2,]
+r2
+
+c2 <- mat[,2]
+c2
+
+mean(mat)
+```
+
+```{r}
+mat1 = matrix(data=c(9,2,3,4,5,6), ncol=3)
+mat1
+
+mat2 = matrix(data=c(7,6,5,3,2,8), nrow=2)
+mat2
+
+matsum=mat1+mat2
+matsum
+```
+
+In order to append 2+ matrices, the number of columns has to be the same; in order to merge, the number of rows has to be the same.
+
+```{r}
+merging = cbind(mat1, mat2)
+merging
+```
+
+```{r}
+appending = rbind(mat1,mat2)
+appending
+```
+
+```{r}
+trans=t(appending)
+trans
+
+dim(trans)
+```
+
+### Arrays
+
+Arrays are like matrices, but they have 2 or more dimensions. Think of them as an **array of arrays**.
+
+```{r}
+z <- array(1:24, dim=c(2,3,4))
+z
+```
+
+### Data Frames
+
+A data frame is a matrix with names above the columns. You can call and use one of the columns without knowing which position it is:
+
+```{r}
+t = data.frame(x=c(11,12,14), y=c(19,20,21), z=c(10,9,7))
+t
+```
+
+```{r}
+mean(t$z) # or mean(t[['z']])
+```
+
+### Lists
+
+Unlike matrices and data frames, the "columns" of lists don't have to be the same length:
+
+```{r}
+L = list(one=1, two=c(1,2), five=seq(0,1,length=5))
+L
+names(L)
+L$five + 10
+```
+
+### Reading and writing files
+
+```{r}
+d = data.frame(a=c(3,4,5), b=c(12,43,54))
+d
+```
+
+```{r}
+write.table(d, file='tst0.txt', row.names=FALSE)
+```
+
+```{r}
+d2 = read.table(file='tst0.txt', header=TRUE)
+d2
+```
+
+### Reading and writing shapefiles
+
+```{r}
+#install.packages('sf')
+#install.packages('ggplot2')
+library(sf)
+library(ggplot2)
+```
+
+```{r}
+PhillyData <- st_read('/Users/michaelpincus/Documents/MUSA/Statistics/statistics/RegressionData/Regression Data.shp')
+```
+
+```{r}
+plot(st_geometry(PhillyData), border='red')
+```
+
+A better way to plot it is with `ggplot2`:
+
+```{r}
+ggplot() + 
+  geom_sf(data=PhillyData, aes(fill=MEDHHINC), color='white', linewidth=0.01) + 
+  labs(
+    title = 'Philadelphia 2000 Data',
+    subtitle = 'Census BGs',
+    fill = 'Median Household Income'
+  ) + theme_void()
+```
+
+### Missing Data
+
+We have some missing data here for variables `a` and `c`:
+
+```{r}
+NAEx = read.csv('/Users/michaelpincus/Documents/MUSA/Statistics/statistics/Week2/Missing Data.csv')
+NAEx
+```
+
+```{r}
+max(NAEx)
+max(NAEx, na.rm=TRUE)
+```
+
+The `na.rm` command tells R whether `NA` values should be stripped before the computation proceeds.
+
+```{r}
+NAEx$d = NAEx$c + 1
+NAEx
+```
+
+### Strings
+
+Sometimes we want to specify something which is not a number, ex. the name of a measurement station or a data file.
+
+```{r}
+m = "apples"
+m
+
+n = "pears"
+n
+```
+
+### If-Else Statements
+
+```{r}
+w = 3 
+if(w<5) {d=2} else {d=10}
+d
+```
+
+### Functions
+
+```{r}
+fun1 = function(arg1,arg2)
+{
+  w=arg1^2
+  return(arg2+w)
+}
+
+fun1(arg1=3, arg2=5)
+```
+
+Some useful statistical functions:
+
+```{r}
+a = c(1,1,1,1,1,1,0,0,0,0,0,0,0,2,2,2,3,3,3,4,4)
+
+mean(a)
+
+max(a)
+
+round(sd(a),2)
+
+sum(a)
+
+summary(a)
+
+summary(factor(a))
+```
+
+The variable $r$ test

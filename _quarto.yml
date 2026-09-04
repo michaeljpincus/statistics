@@ -1,0 +1,20 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Stats Class Notes"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: weekly-notes/index.qmd
+        text: Weekly Notes
+
+format:
+  html:
+    theme: journal
+    css: styles.css
+    toc: true
+
+
