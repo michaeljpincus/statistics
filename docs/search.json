@@ -18,7 +18,7 @@
     "href": "weekly-notes/index.html",
     "title": "Weekly Notes",
     "section": "",
-    "text": "Lecture 3\n\n\nCorrelation and Regression Analysis\n\n\n\n\n\nSep 2, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nLecture 2\n\n\nGetting Started with R\n\n\n\n\n\nAug 31, 2026\n\n\n\n\n\nNo matching items"
+    "text": "Lecture 4\n\n\nOLS Regression and Least Squares Estimation\n\n\n\n\n\nSep 9, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nLecture 3\n\n\nCorrelation and Regression Analysis\n\n\n\n\n\nSep 2, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nLecture 2\n\n\nGetting Started with R\n\n\n\n\n\nAug 31, 2026\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html",
@@ -96,5 +96,54 @@
     "title": "Lecture 3",
     "section": "In R",
     "text": "In R\noptions(scipen=999): Avoids getting scientific notation\ncor(data$X, data$Y, method='pearson'): Finds Pearson’s \\(r\\)\ncor(data$X, data$Y, method='spearman'): Finds the Spearman correlation coefficient\ncor(data): Correlation matrix\ncor.test(data$X, data$Y, method=('pearson')): Tests the significance of the correlation between \\(X\\) and \\(Y\\)"
+  },
+  {
+    "objectID": "weekly-notes/Lecture4.html",
+    "href": "weekly-notes/Lecture4.html",
+    "title": "Lecture 4",
+    "section": "",
+    "text": "If we have a situation where \\(r=18\\) and \\(p=0.03\\), we can say that if \\(H_0\\) where \\(\\rho=0\\) is true, then we will observe \\(r=18\\) 3% of the time. The \\(p\\)-value tells us how likely are we to get a value that is as extreme or more extreme than the observed one, given \\(H_0\\) is true.\nSince \\(p&lt;0.05\\), we can reject \\(H_0\\).\n\n\nA Spearman correlation coefficient works if you suspect the variables are not normally distributed or not linear, for example.\nRemember that Spearman correlations are simply Pearson correlations between ranked value of \\(x\\)’s and \\(y\\)’s. Thus, hypothesis tests will be essentially the same as hypothesis tests for Pearson’s \\(r\\).\n\n\n\nIf we have very large samples, even very small correlation coefficients may be statistically significant. Inversely, if we have very small sample sizes, even very large correlation coefficients may be statistically significant.\nRemember, the \\(T\\)-distribution largely depends on its \\(n-1\\) degrees of freedom."
+  },
+  {
+    "objectID": "weekly-notes/Lecture4.html#review-from-lecture-3",
+    "href": "weekly-notes/Lecture4.html#review-from-lecture-3",
+    "title": "Lecture 4",
+    "section": "",
+    "text": "If we have a situation where \\(r=18\\) and \\(p=0.03\\), we can say that if \\(H_0\\) where \\(\\rho=0\\) is true, then we will observe \\(r=18\\) 3% of the time. The \\(p\\)-value tells us how likely are we to get a value that is as extreme or more extreme than the observed one, given \\(H_0\\) is true.\nSince \\(p&lt;0.05\\), we can reject \\(H_0\\).\n\n\nA Spearman correlation coefficient works if you suspect the variables are not normally distributed or not linear, for example.\nRemember that Spearman correlations are simply Pearson correlations between ranked value of \\(x\\)’s and \\(y\\)’s. Thus, hypothesis tests will be essentially the same as hypothesis tests for Pearson’s \\(r\\).\n\n\n\nIf we have very large samples, even very small correlation coefficients may be statistically significant. Inversely, if we have very small sample sizes, even very large correlation coefficients may be statistically significant.\nRemember, the \\(T\\)-distribution largely depends on its \\(n-1\\) degrees of freedom."
+  },
+  {
+    "objectID": "weekly-notes/Lecture4.html#lecture-4",
+    "href": "weekly-notes/Lecture4.html#lecture-4",
+    "title": "Lecture 4",
+    "section": "Lecture 4",
+    "text": "Lecture 4"
+  },
+  {
+    "objectID": "weekly-notes/Lecture4.html#ordinary-least-squares-regression",
+    "href": "weekly-notes/Lecture4.html#ordinary-least-squares-regression",
+    "title": "Lecture 4",
+    "section": "Ordinary Least Squares Regression",
+    "text": "Ordinary Least Squares Regression\nA statistical method used to examine the relationship between a variable of interest (dependent variable) and one or more explanatory variables (predictors)\n\nStrength of the relationship\nDirection of the relationship (positive, negative, zero)\nGoodness of model fit\n\nOLS regression allows you to calculate the amount by which your dependent variable changes when a predictor variable changes by one unit (holding all other predictors constant)\nRegression with one predictor is called simple regression\nRegression with two+ predictors is called multiple regression.\n\nVariable relationships\nTwo variables, \\(x\\) and \\(y\\), can be related to each other in two ways:\n\nIn a Deterministic relationship, i.e. \\(y\\) is some mathematical function of \\(x\\) (e.g. \\(y=\\text{log}(x+8)\\), \\(y=x^2\\), \\(y=4x+8\\), etc.)\nIn a Non-Deterministic relationship, i.e. there is some general relationship between \\(x\\) and \\(y\\), by no formula that will enable you to calculate the precise value of \\(y\\) for \\(x\\).\n\nSAT scores and college GPA\nCrime rate and household income\nTemperature in a room and comfort level\n\n\n\n\nThe simplest deterministic relationship\nThe simplest deterministic mathematical relationship between two variables \\(x\\) and \\(y\\) is a linear relationship \\(y=mx+b\\), which statisticians rewrite as \\(y=\\beta_0+\\beta_1 x\\).\nThe set of pairs \\((x,y)\\) for which the relationship determines a straight line with slope \\(\\beta_1\\) and y-intercept \\(\\beta_0\\)\n\n\nThe linear probabilistic model\nFor the deterministic model \\(y=\\beta_0 + \\beta_1 x\\), the actual observed value of \\(y\\) is a linear function \\(x\\). In a probabilistic model, we assume \\(\\mathbb{E}(y)\\) is a linear function of \\(x\\), but for fixed \\(x\\), the variable \\(y\\) differs from \\(\\mathbb{E}(y)\\) by a random amount \\(\\epsilon\\).\n\n\nThe residual term \\(\\epsilon\\)\nThe variable \\(\\epsilon\\) is usually referred to as the residual or random error term in the model\n\nWithout \\(\\epsilon\\), any observed pair \\((x,y)\\) would fall exactly on the line \\(y=\\beta_0 + \\beta_1 x\\) called the true (or population) regression line.\n\nThe inclusion of \\(\\epsilon\\) allows \\((x,y)\\) to fall either above the true regression line (when \\(\\epsilon&gt;0\\) or below the line (when \\(\\epsilon&lt;0\\))."
+  },
+  {
+    "objectID": "weekly-notes/Lecture4.html#section",
+    "href": "weekly-notes/Lecture4.html#section",
+    "title": "Lecture 4",
+    "section": "",
+    "text": "\\[y = \\beta_0 + \\beta_1 x_1 + \\beta_2 x_2 + \\dots + \\beta_n x_n +\n\\epsilon\\]"
+  },
+  {
+    "objectID": "weekly-notes/Lecture4.html#basic-regression-in-r",
+    "href": "weekly-notes/Lecture4.html#basic-regression-in-r",
+    "title": "Lecture 4",
+    "section": "Basic Regression in R",
+    "text": "Basic Regression in R\n\nSetting up data\n\nhours_studied &lt;- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)\nexam_score &lt;- c(52, 55, 61, 63, 68, 72, 75, 81, 85, 90)\n\ndata &lt;- data.frame(hours_studied, exam_score)\ndata\n\n   hours_studied exam_score\n1              1         52\n2              2         55\n3              3         61\n4              4         63\n5              5         68\n6              6         72\n7              7         75\n8              8         81\n9              9         85\n10            10         90\n\n\n\n\nVisualizing the relationship\n\nplot(data$hours_studied, data$exam_score,\n     main = 'Hours Studied vs Exam Score',\n     xlab = 'Hours Studied',\n     ylab = 'Exam Score',\n     pch = 19, \n     col = 'blue')\n\n\n\n\n\n\n\n\n\n\nFitting the linear model\n\nmodel &lt;- lm(exam_score ~ hours_studied, data=data)\nsummary(model)\n\n\nCall:\nlm(formula = exam_score ~ hours_studied, data = data)\n\nResiduals:\n     Min       1Q   Median       3Q      Max \n-1.49091 -0.46515  0.00909  0.58333  1.28485 \n\nCoefficients:\n              Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)   47.13333    0.61562   76.56 9.44e-13 ***\nhours_studied  4.19394    0.09922   42.27 1.08e-10 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 0.9012 on 8 degrees of freedom\nMultiple R-squared:  0.9955,    Adjusted R-squared:  0.995 \nF-statistic:  1787 on 1 and 8 DF,  p-value: 1.081e-10\n\n\n\n\nAdding regression line to the plot\n\nplot(data$hours_studied, data$exam_score,\n     main='Hours Studied vs Exam Score',\n     xlab='Hours Studied',\n     ylab='Exam Score',\n     pch=19,\n     col='blue')\nabline(model, col='red', lwd=2)\n\n\n\n\n\n\n\n\n\n\nBasic predictions\n\nnew_data &lt;- data.frame(hours_studied = 5.5)\npredict(model, newdata = new_data)\n\n   1 \n70.2"
+  },
+  {
+    "objectID": "weekly-notes/Lecture4.html#the-simple-linear-regression-model",
+    "href": "weekly-notes/Lecture4.html#the-simple-linear-regression-model",
+    "title": "Lecture 4",
+    "section": "The Simple Linear Regression Model",
+    "text": "The Simple Linear Regression Model\nThere are parameters \\(\\beta_0\\), \\(\\beta_1\\), and \\(\\sigma^2\\) such that for any fixed value of the independent variable \\(x\\), the dependent variable \\(y\\) is related to \\(x\\) through the model equation:\n\\[y = \\beta_0 + \\beta_1 x_1 + \\beta_2 x_2 + \\dots + \\beta_n x_n + \\epsilon\\]\nHere, the quantity \\(\\epsilon\\) is a random variable, which we call the residual, and which is assumed to be normally distributed, with \\(\\mathbb{E}(\\epsilon)=0\\) and \\(V(\\epsilon)=\\sigma^2\\). Said differently, \\(\\epsilon \\sim \\mathcal{N}(0, \\sigma^2)\\).\n\nImplications of the Simple Regression Model\nThe mean value of \\(y\\) is a linear function of \\(x\\).\n\nThat is, the true regression line is the line of mean values.\nThe \\(y\\) value on the line at any \\(x\\) is \\(\\mathbb{E}(y)\\) at that \\(x\\).\n\n\n\nLeast Squares Estimation\nThe way we calculate values for \\(\\beta_1\\) and \\(\\beta_0\\) involves minimizing the sum of squared vertical distances between the points and the estimated regression line.\nThe least squares estimate of the slope coefficient \\(\\beta_i\\) of the true regression line can be represented as:\n\\[ \\beta_1 = \\frac{n\\sum x_i y_i - \\sum x_i \\sum y_i}{n\\sum x_i^2 - \\left(\\sum x_i\\right)^2}\\]\n\n\nEstimating \\(\\sigma^2\\)\nThe parameter \\(\\sigma^2\\) determines the amount of variability inherent in the regression model.\n\nIf \\(\\sigma^2\\) is small, the pairs \\((x_i, y_i)\\) will fall very close to the the true line.\nIf \\(\\sigma^2\\) is large, the pairs \\((x_i, y_i)\\) will be quite spread out about the true regression line.\n\n\n\nSum of Squared Errors (SSE)\nThe SSE is the quantity that the least squares method attempts to minimize. It measures the Its formula is:\n\\[\\text{SSE}=\\sum (y_i-\\hat{y_i})^2\\]\nA lower SSE means your model’s predictions are very close to the actual data points, indicating a good fit.\n\n\nTotal Sum of Squares (SST)\nA quantitative measure of the total amount of variation in observed \\(y\\) values is given by the total sum of squares (SST):\n\\[\\text{SST}=\\sum(y_i-\\bar{y})^2\\]\nThe SST is the sum of squared deviations about the sample mean of the observed \\(y\\) values – without regard to \\(x\\).\n\n\n\nThe Coefficient of Determination\nIf SSE is the amount of variance in \\(y\\) unexplained by the regression model and SST is the total amount of variance in \\(y\\), then SSE/SST is the proportion of total variance that is unexplained by the model.\nThen:\n\\[1-\\text{SSE/SST} = \\text{SSR/SST} = R^2\\]\n\\(R^2\\) is called the coefficient of determination. It is the proportion of the observed variation in the dependent variable \\(y\\) that was explained by the model. Here, SSR is the regression sum of squares, and is calculated as \\(\\text{SSR=SST-SSE}\\).\nThe higher the value of \\(R^2\\), the more successful the simple linear regression model is in explaining the variation in dependent variable \\(y\\). If \\(R^2\\) is small, then you would usually want to look for another model, which either includes alternative, additional, or transformed predictors.\nNote that \\(R^2\\) is the square of \\(r\\), Pearson’s correlation coefficient!"
   }
 ]

@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-09-09">
+<meta name="description" content="OLS Regression and Least Squares Estimation">
+
+<title>Lecture 4 – Geospatial Statistics Portfolio</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-7648515a79679b3b16e4ac9be30e983f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Geospatial Statistics Portfolio</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../weekly-notes/index.html"> 
+<span class="menu-text">Weekly Notes</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#review-from-lecture-3" id="toc-review-from-lecture-3" class="nav-link active" data-scroll-target="#review-from-lecture-3">Review from Lecture 3</a></li>
+  <li><a href="#ordinary-least-squares-regression" id="toc-ordinary-least-squares-regression" class="nav-link" data-scroll-target="#ordinary-least-squares-regression">Ordinary Least Squares Regression</a></li>
+  <li><a href="#the-simple-linear-regression-model" id="toc-the-simple-linear-regression-model" class="nav-link" data-scroll-target="#the-simple-linear-regression-model">The Simple Linear Regression Model</a></li>
+  <li><a href="#basic-regression-in-r" id="toc-basic-regression-in-r" class="nav-link" data-scroll-target="#basic-regression-in-r">Basic Regression in R</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lecture 4</h1>
+</div>
+
+<div>
+  <div class="description">
+    OLS Regression and Least Squares Estimation
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 9, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="review-from-lecture-3" class="level2">
+<h2 class="anchored" data-anchor-id="review-from-lecture-3">Review from Lecture 3</h2>
+<p>If we have a situation where <span class="math inline">\(r=18\)</span> and <span class="math inline">\(p=0.03\)</span>, we can say that if <span class="math inline">\(H_0\)</span> where <span class="math inline">\(\rho=0\)</span> is true, then we will observe <span class="math inline">\(r=18\)</span> 3% of the time. The <span class="math inline">\(p\)</span>-value tells us how likely are we to get a value that is as extreme or more extreme than the observed one, given <span class="math inline">\(H_0\)</span> is true.</p>
+<p>Since <span class="math inline">\(p&lt;0.05\)</span>, we can reject <span class="math inline">\(H_0\)</span>.</p>
+<section id="spearman-correlation-coefficient" class="level4">
+<h4 class="anchored" data-anchor-id="spearman-correlation-coefficient">Spearman Correlation Coefficient</h4>
+<p>A Spearman correlation coefficient works if you suspect the variables are not normally distributed or not linear, for example.</p>
+<p>Remember that Spearman correlations are simply Pearson correlations between ranked value of <span class="math inline">\(x\)</span>’s and <span class="math inline">\(y\)</span>’s. Thus, hypothesis tests will be essentially the same as hypothesis tests for Pearson’s <span class="math inline">\(r\)</span>.</p>
+</section>
+<section id="sample-sizes" class="level4">
+<h4 class="anchored" data-anchor-id="sample-sizes">Sample sizes</h4>
+<p>If we have very large samples, even very small correlation coefficients may be statistically significant. Inversely, if we have very small sample sizes, even very large correlation coefficients may be statistically significant.</p>
+<p>Remember, the <span class="math inline">\(T\)</span>-distribution largely depends on its <span class="math inline">\(n-1\)</span> degrees of freedom.</p>
+</section>
+</section>
+<section id="ordinary-least-squares-regression" class="level2">
+<h2 class="anchored" data-anchor-id="ordinary-least-squares-regression">Ordinary Least Squares Regression</h2>
+<p>A statistical method used to examine the relationship between a variable of interest (dependent variable) and <strong>one or more</strong> explanatory variables (predictors)</p>
+<ul>
+<li><p>Strength of the relationship</p></li>
+<li><p>Direction of the relationship (positive, negative, zero)</p></li>
+<li><p>Goodness of model fit</p></li>
+</ul>
+<p>OLS regression allows you to calculate the amount by which your dependent variable changes when a predictor variable changes by one unit (holding all other predictors constant)</p>
+<p>Regression with one predictor is called <strong>simple regression</strong></p>
+<p>Regression with two+ predictors is called <strong>multiple regression</strong>.</p>
+<section id="variable-relationships" class="level4">
+<h4 class="anchored" data-anchor-id="variable-relationships">Variable relationships</h4>
+<p>Two variables, <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, can be related to each other in two ways:</p>
+<ul>
+<li><p>In a Deterministic relationship, i.e.&nbsp;<span class="math inline">\(y\)</span> is some mathematical function of <span class="math inline">\(x\)</span> (e.g.&nbsp;<span class="math inline">\(y=\text{log}(x+8)\)</span>, <span class="math inline">\(y=x^2\)</span>, <span class="math inline">\(y=4x+8\)</span>, etc.)</p></li>
+<li><p>In a Non-Deterministic relationship, i.e.&nbsp;there is some general relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, by no formula that will enable you to calculate the precise value of <span class="math inline">\(y\)</span> for <span class="math inline">\(x\)</span>.</p>
+<ul>
+<li><p>SAT scores and college GPA</p></li>
+<li><p>Crime rate and household income</p></li>
+<li><p>Temperature in a room and comfort level</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="the-simplest-deterministic-relationship" class="level4">
+<h4 class="anchored" data-anchor-id="the-simplest-deterministic-relationship">The simplest deterministic relationship</h4>
+<p>The simplest deterministic mathematical relationship between two variables <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> is a linear relationship <span class="math inline">\(y=mx+b\)</span>, which statisticians rewrite as <span class="math inline">\(y=\beta_0+\beta_1 x\)</span>.</p>
+<p>The set of pairs <span class="math inline">\((x,y)\)</span> for which the relationship determines a straight line with slope <span class="math inline">\(\beta_1\)</span> and y-intercept <span class="math inline">\(\beta_0\)</span></p>
+</section>
+<section id="the-linear-probabilistic-model" class="level4">
+<h4 class="anchored" data-anchor-id="the-linear-probabilistic-model">The linear probabilistic model</h4>
+<p>For the deterministic model <span class="math inline">\(y=\beta_0 + \beta_1 x\)</span>, the actual observed value of <span class="math inline">\(y\)</span> is a linear function <span class="math inline">\(x\)</span>. In a probabilistic model, we assume <span class="math inline">\(\mathbb{E}(y)\)</span> is a linear function of <span class="math inline">\(x\)</span>, but for fixed <span class="math inline">\(x\)</span>, the variable <span class="math inline">\(y\)</span> differs from <span class="math inline">\(\mathbb{E}(y)\)</span> by a random amount <span class="math inline">\(\epsilon\)</span>.</p>
+</section>
+<section id="the-residual-term-epsilon" class="level4">
+<h4 class="anchored" data-anchor-id="the-residual-term-epsilon">The residual term <span class="math inline">\(\epsilon\)</span></h4>
+<p>The variable <span class="math inline">\(\epsilon\)</span> is usually referred to as the <strong>residual</strong> or <strong>random error</strong> term in the model</p>
+<ul>
+<li>Without <span class="math inline">\(\epsilon\)</span>, any observed pair <span class="math inline">\((x,y)\)</span> would fall exactly on the line <span class="math inline">\(y=\beta_0 + \beta_1 x\)</span> called the <strong>true</strong> (or <strong>population</strong>) <strong>regression line</strong>.</li>
+</ul>
+<p>The inclusion of <span class="math inline">\(\epsilon\)</span> allows <span class="math inline">\((x,y)\)</span> to fall either above the true regression line (when <span class="math inline">\(\epsilon&gt;0\)</span> or below the line (when <span class="math inline">\(\epsilon&lt;0\)</span>).</p>
+</section>
+</section>
+<section id="the-simple-linear-regression-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-simple-linear-regression-model">The Simple Linear Regression Model</h2>
+<p>There are parameters <span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span>, and <span class="math inline">\(\sigma^2\)</span> such that for any fixed value of the independent variable <span class="math inline">\(x\)</span>, the dependent variable <span class="math inline">\(y\)</span> is related to <span class="math inline">\(x\)</span> through the model equation:</p>
+<p><span class="math display">\[y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_n x_n + \epsilon\]</span></p>
+<p>Here, the quantity <span class="math inline">\(\epsilon\)</span> is a random variable, which we call the residual, and which is assumed to be normally distributed, with <span class="math inline">\(\mathbb{E}(\epsilon)=0\)</span> and <span class="math inline">\(V(\epsilon)=\sigma^2\)</span>. Said differently, <span class="math inline">\(\epsilon \sim \mathcal{N}(0, \sigma^2)\)</span>.</p>
+<section id="implications-of-the-simple-regression-model" class="level4">
+<h4 class="anchored" data-anchor-id="implications-of-the-simple-regression-model">Implications of the Simple Regression Model</h4>
+<p>The mean value of <span class="math inline">\(y\)</span> is a linear function of <span class="math inline">\(x\)</span>.</p>
+<ul>
+<li><p>That is, the true regression line is the line of mean values.</p></li>
+<li><p>The <span class="math inline">\(y\)</span> value on the line at any <span class="math inline">\(x\)</span> is <span class="math inline">\(\mathbb{E}(y)\)</span> at that <span class="math inline">\(x\)</span>.</p></li>
+</ul>
+</section>
+<section id="least-squares-estimation" class="level4">
+<h4 class="anchored" data-anchor-id="least-squares-estimation">Least Squares Estimation</h4>
+<p>The way we calculate values for <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_0\)</span> involves minimizing the sum of <strong>squared vertical distances</strong> between the points and the estimated regression line.</p>
+<p>The least squares estimate of the slope coefficient <span class="math inline">\(\beta_i\)</span> of the true regression line can be represented as:</p>
+<p><span class="math display">\[ \beta_1 = \frac{n\sum x_i y_i - \sum x_i \sum y_i}{n\sum x_i^2 - \left(\sum x_i\right)^2}\]</span></p>
+</section>
+<section id="estimating-sigma2" class="level4">
+<h4 class="anchored" data-anchor-id="estimating-sigma2">Estimating <span class="math inline">\(\sigma^2\)</span></h4>
+<p>The parameter <span class="math inline">\(\sigma^2\)</span> determines the amount of variability inherent in the regression model.</p>
+<ul>
+<li><p>If <span class="math inline">\(\sigma^2\)</span> is small, the pairs <span class="math inline">\((x_i, y_i)\)</span> will fall very close to the the true line.</p></li>
+<li><p>If <span class="math inline">\(\sigma^2\)</span> is large, the pairs <span class="math inline">\((x_i, y_i)\)</span> will be quite spread out about the true regression line.</p></li>
+</ul>
+</section>
+<section id="sum-of-squared-errors-sse" class="level4">
+<h4 class="anchored" data-anchor-id="sum-of-squared-errors-sse">Sum of Squared Errors (SSE)</h4>
+<p>The SSE is the quantity that the least squares method attempts to minimize. It measures the Its formula is:</p>
+<p><span class="math display">\[\text{SSE}=\sum (y_i-\hat{y_i})^2\]</span></p>
+<p>A lower SSE means your model’s predictions are very close to the actual data points, indicating a good fit.</p>
+</section>
+<section id="total-sum-of-squares-sst" class="level4">
+<h4 class="anchored" data-anchor-id="total-sum-of-squares-sst">Total Sum of Squares (SST)</h4>
+<p>A quantitative measure of the total amount of variation in observed <span class="math inline">\(y\)</span> values is given by the <strong>total sum of squares (SST)</strong>:</p>
+<p><span class="math display">\[\text{SST}=\sum(y_i-\bar{y})^2\]</span></p>
+<p>The SST is the sum of squared deviations about the sample mean of the observed <span class="math inline">\(y\)</span> values – without regard to <span class="math inline">\(x\)</span>.</p>
+<p><img src="images/clipboard-317674665.png" class="img-fluid"></p>
+</section>
+<section id="the-coefficient-of-determination" class="level4">
+<h4 class="anchored" data-anchor-id="the-coefficient-of-determination">The Coefficient of Determination</h4>
+<p>If SSE is the amount of variance in <span class="math inline">\(y\)</span> unexplained by the regression model and SST is the total amount of variance in <span class="math inline">\(y\)</span>, then SSE/SST is the <strong>proportion</strong> of total variance that is unexplained by the model.</p>
+<p>Then:</p>
+<p><span class="math display">\[1-\text{SSE/SST} = \text{SSR/SST} = R^2\]</span></p>
+<p><span class="math inline">\(R^2\)</span> is called the coefficient of determination. It is the proportion of the observed variation in the dependent variable <span class="math inline">\(y\)</span> that was <strong>explained</strong> by the model. Here, SSR is the <strong>regression sum of squares</strong>, and is calculated as <span class="math inline">\(\text{SSR=SST-SSE}\)</span>.</p>
+<p>The higher the value of <span class="math inline">\(R^2\)</span>, the more successful the simple linear regression model is in explaining the variation in dependent variable <span class="math inline">\(y\)</span>. If <span class="math inline">\(R^2\)</span> is small, then you would usually want to look for another model, which either includes alternative, additional, or transformed predictors.</p>
+<p>Note that <span class="math inline">\(R^2\)</span> is the square of <span class="math inline">\(r\)</span>, Pearson’s correlation coefficient!</p>
+</section>
+</section>
+<section id="basic-regression-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="basic-regression-in-r">Basic Regression in R</h2>
+<section id="setting-up-data" class="level4">
+<h4 class="anchored" data-anchor-id="setting-up-data">Setting up data</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>hours_studied <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>exam_score <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">52</span>, <span class="dv">55</span>, <span class="dv">61</span>, <span class="dv">63</span>, <span class="dv">68</span>, <span class="dv">72</span>, <span class="dv">75</span>, <span class="dv">81</span>, <span class="dv">85</span>, <span class="dv">90</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(hours_studied, exam_score)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   hours_studied exam_score
+1              1         52
+2              2         55
+3              3         61
+4              4         63
+5              5         68
+6              6         72
+7              7         75
+8              8         81
+9              9         85
+10            10         90</code></pre>
+</div>
+</div>
+</section>
+<section id="visualizing-the-relationship" class="level4">
+<h4 class="anchored" data-anchor-id="visualizing-the-relationship">Visualizing the relationship</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(data<span class="sc">$</span>hours_studied, data<span class="sc">$</span>exam_score,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">'Hours Studied vs Exam Score'</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">'Hours Studied'</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">'Exam Score'</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">19</span>, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">'blue'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Lecture4_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fitting-the-linear-model" class="level4">
+<h4 class="anchored" data-anchor-id="fitting-the-linear-model">Fitting the linear model</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(exam_score <span class="sc">~</span> hours_studied, <span class="at">data=</span>data)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = exam_score ~ hours_studied, data = data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.49091 -0.46515  0.00909  0.58333  1.28485 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   47.13333    0.61562   76.56 9.44e-13 ***
+hours_studied  4.19394    0.09922   42.27 1.08e-10 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.9012 on 8 degrees of freedom
+Multiple R-squared:  0.9955,    Adjusted R-squared:  0.995 
+F-statistic:  1787 on 1 and 8 DF,  p-value: 1.081e-10</code></pre>
+</div>
+</div>
+</section>
+<section id="adding-regression-line-to-the-plot" class="level4">
+<h4 class="anchored" data-anchor-id="adding-regression-line-to-the-plot">Adding regression line to the plot</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(data<span class="sc">$</span>hours_studied, data<span class="sc">$</span>exam_score,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Hours Studied vs Exam Score'</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Hours Studied'</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Exam Score'</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch=</span><span class="dv">19</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col=</span><span class="st">'blue'</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(model, <span class="at">col=</span><span class="st">'red'</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Lecture4_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="basic-predictions" class="level4">
+<h4 class="anchored" data-anchor-id="basic-predictions">Basic predictions</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">hours_studied =</span> <span class="fl">5.5</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(model, <span class="at">newdata =</span> new_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   1 
+70.2 </code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
