@@ -5,6 +5,16 @@
   color: #a8d1f0 !important; /* or whatever contrasts well */
 }
 
+code,
+pre,
+pre code,
+code.sourceCode,
+pre.sourceCode,
+kbd,
+samp {
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace !important;
+}
+
 .navbar-brand:hover,
 .navbar-nav .nav-link:hover {
   color: #cee4f5 !important;

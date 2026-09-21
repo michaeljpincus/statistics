@@ -1,0 +1,224 @@
+---
+title: "Lecture 6"
+description: "Multiple Regression and Outputs"
+date: 09-16-2026
+editor: visual
+---
+
+## Review from Lecture 5
+
+Assumptions:
+
+- Residuals are normal: $\epsilon \sim \mathcal{N}(\mu=0, \sigma^2)$
+
+- Residuals are random
+
+We are trying to minimize the $\text{SSE}$, the sum of squared errors, when we are creating a regression equation.
+
+$R^2$ is the total variance in data as explained by the model. It is obtained through this formula:
+
+$$
+R^2 = \frac{\text{SSR}}{\text{SST}}
+$$
+
+Where $\text{SSR}$ is the sum of squared residuals (variance explained by the model) and $\text{SST}$ is the total sum of squares (the variance in the actual data). Note that:
+
+$$
+\text{SST} = \text{SSR + SSE}
+$$
+
+Where $\text{SSE}$ is the sum of squared errors, the unexplained variance in residuals.
+
+### In other words
+
+$\text{SST}$ (Total Sum of Squares) doesn't involve your model at all, it's just how much $y$ values are spread around the average.
+
+$\text{SSR}$ (Regression Sum of Squares) tells you how far your predicted values are from the mean. It measures the variation that the model's prediction captures.
+
+$\text{SSE}$ (Error Sum of Squares) measures the variation your model fails to explain.
+
+## Multiple Regression
+
+When we have $k>1$ predictors, rather than getting a line in 2 dimensions, we get a surface in $k+1$ dimensions
+
+Each independent variable will have its own slope coefficient which will indicate the relationship of that particular predictor with the dependent variable, *controlling for all other independent variables in the regression*.
+
+The best fit equation becomes:
+
+$$
+\text{Income} = \beta_0 + \beta_1x_1 + \beta_2x_2+\dots+\beta_kx_k+\epsilon
+$$
+
+The coefficient $\beta_i$ of each predictor may be interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant)
+
+### $\beta$ coefficients
+
+$\beta$ is the coefficient of the independent variable (i.e., the slope of the regression line)
+
+- There is one coefficient per independent variable
+
+- The sign indicates whether the relationship between the dependent and independent variables is positive (direct) or negative (inverse)
+
+- The value of $\beta$ is the amount by which the dependent variable changes when the predictor increases by one unit (all other predictors being held constant)
+
+### $\beta$ coefficient estimation - least squares
+
+Given $n$ observations on $y$, and $k$ predictors $x_1 \dots x_k$, the estimates $\hat{\beta_0}, \hat{\beta_1}, \hat{\beta_2}, \dots, \hat{\beta_k}$ are chosen simultaneously to minimize the expression for the Error Sum of Squares $\text{SSE}$ given by:
+
+$$
+\text{SSE}=\sum_{i=1}^n\epsilon^2 = \sum_{i=1}^n(y-\hat{y})^2
+$$
+
+### $R^2$ and adjusted $R^2$
+
+As in simple regression, $\text{SST}=\sum(y_i-\bar{y})^2$ and $R^2=1-\frac{\text{SSE}}{\text{SST}}$.
+
+Here, $R^2$ is the coefficient of multiple determination, or the proportion of variance in the model explained by all $k$ predictors.
+
+Because extra predictors will generally increase $R^2$, it is typically adjusted for the number of predictors:
+
+$$
+R^2_{\text{adj}}=\frac{(n-1)R^2-k}{n-(k+1)}
+$$
+
+### Model Utility Test: $F$-test (or the $F$-ratio)
+
+Before doing a hypothesis test for each individual predictor, we do a so-called model utility test, referred to as the $F$-test. It is a goodness of fit measure, as is $R^2$
+
+It tests $H_0$ that all coefficients in the model are (jointly) $0$ vs. $H_1$ that at least one of the coefficients $\ne 0$
+
+$$
+H_0: \beta_1=\beta_2=\dots=\beta_k=0
+$$
+
+$$
+H_1: \beta_1\ne0 \text{ or } \beta_2 \ne 0\text{ or } \dots \ \beta_k\ne0
+$$
+
+## Hypothesis testing and confidence intervals
+
+In addition to the omnibus utility model the $F$-test, a hypothesis test (the $t$-test) is done for each predictor $i$.
+
+Most statisticians will only look at these $t$-tests for each individual predictor if the $F$-test is significant.
+
+As in simple regression, $H_0$ is always that the predictor $i$ is not associated with the dependent variable (i.e., $H_1 : \beta_i=0$ ).
+
+The alternative hypothesis is that $\beta_i\ne0$.
+
+### $p$-values
+
+The $p$-value is the probability of observing a value that is at least as different from $0$ (the value stated in $H_0$ as the given estimated value.
+
+- If this probability is small enough (generally $p<0.05$), we reject $H_0$ of $\beta=0$ for an $H_1$ of $\beta \ne 0$.
+
+- The rejection of $H_0$ indicates that the independent variable is a statistically significant predictor of the dependent variable.
+
+- Again, when the null hypothesis $\beta=0$ cannot be rejected, the dependent variable is not related to the independent variable.
+
+- There is one $p$-value per independent variable.
+
+## Multiple regression assumptions
+
+1.  Same assumptions and model aptness checks as for simple regressions
+2.  The predictors should not be very strongly correlated with each other (i.e., no *multicollinearity*)
+    - Multicollinearity is when two or more predictors are very strongly correlated with eachother, so that $r>0.9$ or $r<-0.9$.
+
+### Better ways of testing multicollinearity
+
+Imagine you have a regression with $k$ predictors.
+
+If $k>2$, it is possible that the pairwise correlations are small, and yet linear dependence exists among three or even more variables. Sometimes there exists a situation where:
+
+$$
+X_3 \approx X_1 + X_2
+$$
+
+In these instances, you can assess for multicollinearity by regressing each predictor $k$ on all the remaining predictors. Basically, you treat it temporarily as if it were the outcome and see how well the **other** predictors can predict it.
+
+- Look at the $R^2$ in each of the $k$ regressions. If any of these regressions yield $R^2 > 0.8$, there is likely a problem with multicollinearity.
+
+- Using the $R^2$ values from above, calculate the Variance Inflation Factor for each predictor $k$ in the *original* regression. You can do this with `vif()` in R. By hand $\text{VIF}$ is calculated as:
+
+$$
+\text{VIF}_k=\frac{1}{1-R^2_k}
+$$
+
+We get one $\text{VIF}$ for each predictor in our original regression. The general rule of thumb is that if $\text{VIF}>4$, it warrants further investigation.
+
+### Number of Observations 
+
+A major rule of thumb is that you should have *at least* 10 observations for every parameter estimated. So with $n=15$, you should not include more than one $\beta$ in your regression.
+
+## Regression outputs 
+
+### One continuous predictor 
+
+Let's say we are running a regression on aggravated assaults using median house value as a predictor and get the following results:
+
+- `R-SQUARE: 0.23`
+
+- `CONSTANT: 34.32, Probability: 0.0000000`
+
+- `MEDHVALUE: -0.91, Probability: 0.0000000`
+
+23% of the variance in our dependent variable is explained by the model `R-SQUARE`. Median house value is a highly significant predictor of aggravated assaults (`p<0.000001`). A 1 unit increase in the median house value is associated with a decrease in the number of aggravated assaults by `0.91`.
+
+### Two continuous predictors 
+
+Let's say we want to include the presence of parks in the predictor block group (a binary predictor, `0` or `1`. We get the following results:
+
+- `R-SQUARE: 0.27, ADJUSTED R-SQUARE 0.26`
+
+- `CONSTANT 35.42, Probability: 0.000000`
+
+- `MEDHVALUE -0.86, Probability: 0.000000`
+
+- `PARKS 8.31, Probability: 0.000000`
+
+27% of the variance in our dependent variable is explained by the model. Both median house value and the presence of parks are highly significant predictors of aggravated assaults (`p<00000.1` for both variables). 1 unit decrease in median house value is associated with a decrease in the number of aggravated assaults by `0.86`. A one-unit increase int he presence of parks is associated with `8.31` additional aggravated assaults.
+
+It is important to note that adding new predictors changes the $\beta$ coefficients and corresponding $p$-values of the variables that were originally in the model.
+
+## Categorical/Ordinal variables as predictors 
+
+Assume you'd like to add another predictor to the model: the community policing organization, or unit, serving the block group
+
+- Assume that the community policing unit variable has the following values: A, B, C, D
+
+- Recall that $\beta$ is the amount by which the dependent variable changes should the predictor go up by 1. When we have a categorical predictor, the interpretation of $\beta$ becomes nonsensical.
+
+- The way to include categorical and ordinal variables is to create a set of **dummy** (binary) variables
+
+If you have four values in the community policing unit, any three dummy variables will be included in the model. With this method, the first three dummy variables take on `1` if they are the unit included in the block group, and `0` if otherwise. If all three are `0`, then it's bound to be unit D. The reason why we can't include all four in the model:
+
+$$
+\text{DummyA + DummyB + DummyC + DummyD}=1
+$$
+
+### Practice with dummy variables in R
+
+```{r}
+set.seed(123)
+n <- 150
+
+df <- data.frame(
+  Department = sample(c("HR", "Marketing", "Engineering"), n, replace = TRUE),
+  Years      = round(runif(n, 0, 15), 1),
+  Rating     = sample(1:5, n, replace = TRUE)
+)
+
+df$Salary <- 30 +
+  2 * df$Years +
+  4 * df$Rating +
+  6  * (df$Department == "Marketing") +
+  15 * (df$Department == "Engineering") +
+  rnorm(n, mean = 0, sd = 5)
+
+df$Department <- factor(df$Department,
+                        levels=c("HR", "Marketing", "Engineering"))
+```
+
+```{r}
+model <- lm(Salary ~ Years + Rating + Department, data=df)
+summary(model)
+```
