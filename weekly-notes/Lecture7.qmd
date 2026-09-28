@@ -1,0 +1,158 @@
+---
+title: "Lecture 7"
+description: "Regression Diagnostics and Log Transformations"
+editor: visual
+---
+
+## Regression Diagnostics
+
+1.  First, we look at the $F$ statistic and the associated $p$-value. The $F$ statistic is an omnibus test, which tests $H_0$ that none of the independent variables in the model is a significant predictor of the dependent variable.
+2.  Next, look at the $p$-value associated with each independent variable.
+3.  If the predictor is significant, we look at the sign and value of the $\hat{\beta}$ for that predictor. The sign of $\hat{\beta}$ tells us if it's a direct or inverse relationship between $x$ and $y$.
+
+### Two or more categorical variables in a regression
+
+Imagine we want to predict median house value using these predictors:
+
+- \% of individuals with a bachelor's degree or more
+
+- Presence of a park (binary)
+
+- Police unit covering the block group (categorical in A, B, C, and D)
+
+- Parking type (categorical, type of parking)
+
+There will always be $n-1$ predictors for $n$ categories in a predictor.
+
+- If Unit A = 0, Unit B = 0, Unit C = 0, then it must be the case that the Police Unit must be Unit D.
+
+- Since D is the reference category, the $\hat{\beta}$ values are all in comparison to D.
+
+$\beta_0$ represents median household value where A, B, and C and are all equal to zero (so it's the median household income where the block group is D). The equation would be:
+
+$$
+y=\text{Agg. Assaults}=\beta_0+\beta_1\text{Med. HVal.}+\beta_2\text{Parks}+\beta_3\text{DummyA} + \beta_4\text{DummyB}+\beta_5\text{DummyC}
+$$
+
+When we receive the outputs from R, we plug in the coefficients to make a prediction.
+
+$$
+\hat{y}=30.21-0.56\text{Med. HVal.}+9.31\text{Parks}+0.13\text{DummyA}-1.27\text{DummyB}+0.34\text{DummyC}
+$$
+
+$$
+\hat{y}=30.21 - 0.56(35) + 9.31(0) + 0.13(0) -1.27(0)+0.34(0) = 10.61
+$$
+
+In this case, the model over-predicts the value of Aggravated Assaults by $0.61$.
+
+## Regression Assumptions
+
++-----------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Assumption                                                                                                      | Assumption Check                                                                                                                                                                                                                                           |
++=================================================================================================================+============================================================================================================================================================================================================================================================+
+| **Linear relationship** between dependent variable $y$ and each predictor $x$                                   | Scatterplots between $y$ and $x$                                                                                                                                                                                                                           |
++-----------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Normality of residuals**                                                                                      | Look at the histogram of the residuals to see if they are normal                                                                                                                                                                                           |
+|                                                                                                                 |                                                                                                                                                                                                                                                            |
+| $\epsilon\sim\mathcal{N}(0,\sigma^2)$                                                                           |                                                                                                                                                                                                                                                            |
++-----------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Homoscedasticity.** The variance of the residuals $\epsilon$ is constant regardless of the values of each $x$ | Look at the scatterplots of standardized residuals against each predictor and see if variance of residuals remains the same for different values of each predictor                                                                                         |
++-----------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Independence of observations.** There should be no spatial or temporal dependence in the data.                | Look at the Moran's $I$ of the residuals or the values of $y$ to examine whether the regression residuals, or the dependent variable itself, are spatially autocorrelated.                                                                                 |
++-----------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **No multicolinearity** (applies only to multiple regression).                                                  | Look at the correlation matrix of predictors. If correlation between any pair of predictors $>0.8$ we might have multicolinarity. Alternatively regress each predictor against eachother and look at the $R^2$ (should not be $>0.8$) or the $\text{VIF}$. |
++-----------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **No fewer than 10 observations per predictor.**                                                                | Look at the ratio between the \# observations and \# of predictors.                                                                                                                                                                                        |
++-----------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+### Calculating the Variance Inflation Factor
+
+$$
+\text{VIF}(x_j)=\frac{1}{1-R^2_j}
+$$
+
+1.  For each predictor $X_j$, regress $X_j$ on the other predictors.
+2.  $R^2_j$ is the $R^2$ from that auxiliary regression.
+3.  Then compute the $\text{VIF}$ from the formula above.
+
+## Example in R
+
+### Checking Linearity
+
+```{r}
+options(scipen = 999)
+multregdata <- read.csv('RegressionData.csv')
+plot(multregdata$MEDHHINC, multregdata$MEDHVAL)
+plot(multregdata$MEDHHINC, multregdata$PCTVACANT)
+plot(multregdata$MEDHHINC, multregdata$PCTBACHMOR)
+```
+
+What we're trying to avoid is very obvious patterns where the relationship is not linear (ex. it's a parabola).
+
+### Checking multicolinearity
+
+Looking at pairwise correlations:
+
+```{r}
+predictors <- as.matrix(cbind(multregdata$MEDHVAL, multregdata$PCTVACANT, multregdata$BCTBACHMOR))
+cor(predictors)
+```
+
+### Running the regression
+
+```{r}
+fit <- lm(formula = MEDHHINC ~ MEDHVAL + PCTVACANT + PCTBACHMOR, data=multregdata)
+
+summary(fit)
+```
+
+### Variance Inflation Factor
+
+```{r}
+library(car)
+print(vif(fit))
+```
+
+Because none of the VIFs ar greater than 4, there are no issues with multicolinearity.
+
+### Checking the normality of residuals
+
+```{r}
+multregdata$resids <- resid(fit)
+hist(multregdata$resids)
+```
+
+### Checking for heteroskedasticity
+
+```{r}
+multregdata$predvals <- fitted(fit)
+multregdata$stdres <- rstandard(fit)
+plot(multregdata$predvals, multregdata$stdres)
+```
+
+This is a classic example of heteroskedasticity! Let's see the plots between the residuals and each individual variable.
+
+## A review of logarithms
+
+Logarithms are the opposite of exponentiation.
+
+$$
+\text{if } x=b^y,\text{ then }y=\text{log}_b(x)
+$$
+
+When the base is $e$, we have a natural logarithm denoted by $\text{ln}$.
+
+### $\text{log}$ transformations
+
+Sometimes, it is possible to make a variable normal by subjecting it to some simple algebraic operations.
+
+- It can help with a non-normality of residuals, non-linear relationship between $x$ and $y$, or heteroskedasdicity.
+
+<!-- -->
+
+- For $x>1$, $\text{ln}(x)$ increases as $x$ increases, but at a slower pace.
+
+```{r}
+multregdata$LNMEDHHINC <- log(multregdata$MEDHHINC + 1)
+```

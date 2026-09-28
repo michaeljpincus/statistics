@@ -145,13 +145,13 @@ $$
 
 We get one $\text{VIF}$ for each predictor in our original regression. The general rule of thumb is that if $\text{VIF}>4$, it warrants further investigation.
 
-### Number of Observations 
+### Number of Observations
 
 A major rule of thumb is that you should have *at least* 10 observations for every parameter estimated. So with $n=15$, you should not include more than one $\beta$ in your regression.
 
-## Regression outputs 
+## Regression outputs
 
-### One continuous predictor 
+### One continuous predictor
 
 Let's say we are running a regression on aggravated assaults using median house value as a predictor and get the following results:
 
@@ -163,7 +163,7 @@ Let's say we are running a regression on aggravated assaults using median house 
 
 23% of the variance in our dependent variable is explained by the model `R-SQUARE`. Median house value is a highly significant predictor of aggravated assaults (`p<0.000001`). A 1 unit increase in the median house value is associated with a decrease in the number of aggravated assaults by `0.91`.
 
-### Two continuous predictors 
+### Two continuous predictors
 
 Let's say we want to include the presence of parks in the predictor block group (a binary predictor, `0` or `1`. We get the following results:
 
@@ -179,7 +179,7 @@ Let's say we want to include the presence of parks in the predictor block group 
 
 It is important to note that adding new predictors changes the $\beta$ coefficients and corresponding $p$-values of the variables that were originally in the model.
 
-## Categorical/Ordinal variables as predictors 
+## Categorical/Ordinal variables as predictors
 
 Assume you'd like to add another predictor to the model: the community policing organization, or unit, serving the block group
 
