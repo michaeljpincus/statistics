@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-09-26">
+
+<title>Lecture8 – Geospatial Statistics Portfolio</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-7648515a79679b3b16e4ac9be30e983f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Geospatial Statistics Portfolio</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./weekly-notes/index.html"> 
+<span class="menu-text">Weekly Notes</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#review-from-last-week" id="toc-review-from-last-week" class="nav-link active" data-scroll-target="#review-from-last-week">Review from last week</a></li>
+  <li><a href="#log-transformations" id="toc-log-transformations" class="nav-link" data-scroll-target="#log-transformations">Log Transformations</a>
+  <ul class="collapse">
+  <li><a href="#dependent-variable-only" id="toc-dependent-variable-only" class="nav-link" data-scroll-target="#dependent-variable-only">Dependent variable only</a></li>
+  <li><a href="#independent-variable-only" id="toc-independent-variable-only" class="nav-link" data-scroll-target="#independent-variable-only">Independent variable only</a></li>
+  <li><a href="#both-dependent-and-independent-variable" id="toc-both-dependent-and-independent-variable" class="nav-link" data-scroll-target="#both-dependent-and-independent-variable">Both dependent and independent variable</a></li>
+  <li><a href="#when-textlog-transformations-arent-helpful" id="toc-when-textlog-transformations-arent-helpful" class="nav-link" data-scroll-target="#when-textlog-transformations-arent-helpful">When <span class="math inline">\(\text{log}\)</span> transformations aren’t helpful</a></li>
+  </ul></li>
+  <li><a href="#residual-plots-and-polynomial-regression" id="toc-residual-plots-and-polynomial-regression" class="nav-link" data-scroll-target="#residual-plots-and-polynomial-regression">Residual plots and polynomial regression</a>
+  <ul class="collapse">
+  <li><a href="#polynomial-regression" id="toc-polynomial-regression" class="nav-link" data-scroll-target="#polynomial-regression">Polynomial regression</a></li>
+  <li><a href="#p-values-for-selecting-order" id="toc-p-values-for-selecting-order" class="nav-link" data-scroll-target="#p-values-for-selecting-order"><span class="math inline">\(p\)</span>-values for selecting order</a></li>
+  <li><a href="#what-if-the-polynomial-model-doesnt-work" id="toc-what-if-the-polynomial-model-doesnt-work" class="nav-link" data-scroll-target="#what-if-the-polynomial-model-doesnt-work">What if the polynomial model doesn’t work?</a></li>
+  </ul></li>
+  <li><a href="#approaches-to-regression-analysis" id="toc-approaches-to-regression-analysis" class="nav-link" data-scroll-target="#approaches-to-regression-analysis">2 approaches to regression analysis</a>
+  <ul class="collapse">
+  <li><a href="#training-and-validation-datasets" id="toc-training-and-validation-datasets" class="nav-link" data-scroll-target="#training-and-validation-datasets">Training and validation datasets</a></li>
+  <li><a href="#root-mean-square-error-rmse" id="toc-root-mean-square-error-rmse" class="nav-link" data-scroll-target="#root-mean-square-error-rmse">Root Mean Square Error (RMSE)</a></li>
+  <li><a href="#problems-with-rmse" id="toc-problems-with-rmse" class="nav-link" data-scroll-target="#problems-with-rmse">Problems with RMSE</a></li>
+  <li><a href="#potential-solutions" id="toc-potential-solutions" class="nav-link" data-scroll-target="#potential-solutions">Potential solutions</a></li>
+  <li><a href="#overfitting" id="toc-overfitting" class="nav-link" data-scroll-target="#overfitting">Overfitting</a></li>
+  </ul></li>
+  <li><a href="#practice-in-r" id="toc-practice-in-r" class="nav-link" data-scroll-target="#practice-in-r">Practice in R</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lecture8</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 26, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="review-from-last-week" class="level2">
+<h2 class="anchored" data-anchor-id="review-from-last-week">Review from last week</h2>
+<p>The <span class="math inline">\(F\)</span> statistic in the regression output tests the <span class="math inline">\(H_0\)</span> that none of the predictors do anything to predict the independent variable.</p>
+<p>If <span class="math inline">\(p&lt;0.05\)</span>, we reject <span class="math inline">\(H_0\)</span> that at least one of the predictors is doing something to account for the variance in dependent variable <span class="math inline">\(y\)</span>.</p>
+</section>
+<section id="log-transformations" class="level2">
+<h2 class="anchored" data-anchor-id="log-transformations">Log Transformations</h2>
+<p>Sometimes it is possible to make a variable normal by subjecting it to some simple algebraic operations.</p>
+<ul>
+<li><p>This sometimes helps when we deal with issues of non normality of residuals or non linear relationship between x and y.</p>
+<ul>
+<li>The logarithmic transformation of variable <span class="math inline">\(x\)</span> is problematic when we have zero values. In that case, <span class="math inline">\(\text{ln}(x+1)\)</span> may help.</li>
+</ul></li>
+<li><p>The logarithmic transformation is the most widely used to achieve normality when the variable is positively skewed (tail on the right).</p></li>
+<li><p>Analysis is then performed on the <em>transformed</em> variables.</p></li>
+</ul>
+<section id="dependent-variable-only" class="level3">
+<h3 class="anchored" data-anchor-id="dependent-variable-only">Dependent variable only</h3>
+<p>Interpretation of the coefficient: as predictor <span class="math inline">\(x\)</span> goes up by 1 unit, the expected change in our dependent variable <span class="math inline">\(y\)</span> is <span class="math inline">\((e^{\beta_1} -1) * 100\%\)</span></p>
+<p>When <span class="math inline">\(\beta_1\)</span> is small, we can say that as x goes up by 1 unit, expected change in our dependent variable <span class="math inline">\(y\)</span> is approximately <span class="math inline">\(100 * \beta_1\%\)</span>.</p>
+</section>
+<section id="independent-variable-only" class="level3">
+<h3 class="anchored" data-anchor-id="independent-variable-only">Independent variable only</h3>
+<p>A 1% increase in the independent variable is associated with a change in the dependent variable by <span class="math inline">\(\frac{\beta_1}{100}\)</span> units.</p>
+</section>
+<section id="both-dependent-and-independent-variable" class="level3">
+<h3 class="anchored" data-anchor-id="both-dependent-and-independent-variable">Both dependent and independent variable</h3>
+<p>As <span class="math inline">\(x\)</span> changes by 1%, <span class="math inline">\(y\)</span> changes by <span class="math inline">\((1.01^{\beta_1}-1)*100\%\)</span>.</p>
+<p>When <span class="math inline">\(\beta_1\)</span> is small, we can use the approximation <span class="math inline">\(\beta_1\%\)</span>.</p>
+</section>
+<section id="when-textlog-transformations-arent-helpful" class="level3">
+<h3 class="anchored" data-anchor-id="when-textlog-transformations-arent-helpful">When <span class="math inline">\(\text{log}\)</span> transformations aren’t helpful</h3>
+<p>There are a few situations where this is the case:</p>
+<ul>
+<li><p>When you have a huge spike at 0, it won’t solve the non-normality issue.</p></li>
+<li><p>When there’s a long tail on the left (a negatively-skewed distribution)</p></li>
+</ul>
+<p>You could technically transpose the data to shift it, but the interpretation of the <span class="math inline">\(\beta\)</span> coefficients are very complicated to interpret. If we’re sticking to the simplistic method of OLS regression, we might as well keep the output simplistic as well.</p>
+</section>
+</section>
+<section id="residual-plots-and-polynomial-regression" class="level2">
+<h2 class="anchored" data-anchor-id="residual-plots-and-polynomial-regression">Residual plots and polynomial regression</h2>
+<p>The residuals <span class="math inline">\(\epsilon_1,\dots,\epsilon_n\)</span> are a great method to check regression assumptions.</p>
+<p>In a residual plot, you are looking for outliers, curvature, or changing variance.</p>
+<section id="polynomial-regression" class="level3">
+<h3 class="anchored" data-anchor-id="polynomial-regression">Polynomial regression</h3>
+<p>To account for curvature, we can run a polynomial regression to fit a polynomial instead of a line.</p>
+<p>The quadratic model is:</p>
+<p><span class="math display">\[
+y=\beta_0+\beta_1x+\beta_2x^2 + \epsilon
+\]</span></p>
+<p>The cubic model is:</p>
+<p><span class="math display">\[
+y=\beta_0+\beta_1x+\beta_2x^2+\beta_3x^3+\epsilon
+\]</span></p>
+<p>The higher the order of the polynomial, the more curvature it can account for. However, it’s best not to use a polynomial that is of higher order than 3. We should choose the <strong>lowest</strong> order polynomial possible.</p>
+</section>
+<section id="p-values-for-selecting-order" class="level3">
+<h3 class="anchored" data-anchor-id="p-values-for-selecting-order"><span class="math inline">\(p\)</span>-values for selecting order</h3>
+<p>The regression output provides a more formal method for selecting the order of the polynomial. This method typically agrees with looking at the residual plot.</p>
+<p>Look at the <span class="math inline">\(p\)</span>-value for the highest order term (cubic or quadratic) in the regression output (e.g., fit the cubic model to start. If the cubic term is significant, use the cubic model. If the quadratic term is not significant, remove it and rerun the model assuming a linear regression).</p>
+</section>
+<section id="what-if-the-polynomial-model-doesnt-work" class="level3">
+<h3 class="anchored" data-anchor-id="what-if-the-polynomial-model-doesnt-work">What if the polynomial model doesn’t work?</h3>
+<p>We can try other methods, such as centering the variable or combining the polynomial regression with <span class="math inline">\(\text{log}\)</span> transformations.</p>
+</section>
+</section>
+<section id="approaches-to-regression-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="approaches-to-regression-analysis">2 approaches to regression analysis</h2>
+<ol type="1">
+<li><p>Theory-driven, <em>traditional</em> statistical approach</p>
+<ul>
+<li>Formulate a theory that the dependent variable is a function of one or more predictors.</li>
+<li>Test that theory by using the simple/multiple regression methods we described earlier, focusing more on the significance and effect size of each predictor than on the overall predictive ability of the model (e.g., <span class="math inline">\(R^2\)</span>)</li>
+</ul></li>
+<li><p>Statistical learning/data-mining paradigm focusing on model’s predictive ability</p>
+<ul>
+<li><p>With this framework, we care care more about how well the overall model firs the data and focus less on the contribution of each individual predictor.</p></li>
+<li><p>Goal is to optimize quantities like <span class="math inline">\(R^2\)</span> and RMSE, and not just for the data set at hand: we also want to assess the quality of prediction for unseen data.</p></li>
+</ul></li>
+</ol>
+<section id="training-and-validation-datasets" class="level3">
+<h3 class="anchored" data-anchor-id="training-and-validation-datasets">Training and validation datasets</h3>
+<p>Imagine we have a dataset with 1000 observations and are trying to fit the models using this data set. But it’s only one dataset!</p>
+<p>So, we randomly split the dataset in half. 500 as training, 500 as hold-outs to predict. We use this dataset to “train” the regression models.</p>
+<p>For the first model, we then take the <span class="math inline">\(\beta\)</span> coefficients that were estimated with the training dataset and compute the predicted value <span class="math inline">\(\hat{y_i}\)</span> and the residual <span class="math inline">\(\epsilon\)</span> for each observation <span class="math inline">\(i\)</span> in the validation dataset. <strong>We then repeat this for the second model.</strong></p>
+<p>We then use the validation dataset to calculate a statistic known as the <strong>Root Mean Square Error</strong> for both models.</p>
+</section>
+<section id="root-mean-square-error-rmse" class="level3">
+<h3 class="anchored" data-anchor-id="root-mean-square-error-rmse">Root Mean Square Error (RMSE)</h3>
+<p>We get the RMSE by dividing the <span class="math inline">\(\text{SSE}\)</span> by the number of observations <span class="math inline">\(n\)</span> to first get the Mean Square Error (MSE). We then take the square root to get our RMSE:</p>
+<p><span class="math display">\[
+\text{RMSE}=\sqrt{\frac{\sum_{i=1}^n(y_i-\hat{y}_i)^2}{n}} = \sqrt{\frac{\sum_{i=1}^n\epsilon_i^2}{n}}
+\]</span></p>
+<p>RMSE is an estimate of the magnitude of a typical residual.</p>
+</section>
+<section id="problems-with-rmse" class="level3">
+<h3 class="anchored" data-anchor-id="problems-with-rmse">Problems with RMSE</h3>
+<p>The RMSE will depend on the observations that end up being in the training and validation data sets.</p>
+<ul>
+<li>If we repeat the process of randomly splitting the sample set into two parts, we will get a somewhat different estimate for the RMSE each time, and that may affect the selection of the best model.</li>
+</ul>
+<p>Only part of the observations (those which are included in the training dataset) are used for model fitting and parameter estimation. This is especially problematic if our initial dataset is already small</p>
+</section>
+<section id="potential-solutions" class="level3">
+<h3 class="anchored" data-anchor-id="potential-solutions">Potential solutions</h3>
+<p><strong>Leave One Out Cross Validation</strong></p>
+<ul>
+<li>Holds out one observation from the dataset, estimate its <span class="math inline">\(\hat{y}\)</span> and <span class="math inline">\(\epsilon\)</span> from the model, and then does the same thing for every single value from the dataset. The RMSE is then calculated.</li>
+</ul>
+<p><span class="math inline">\(k\)</span><strong>-fold Cross Validation</strong></p>
+<ul>
+<li><p>Quicker than LOOCV if you have a large sample size <span class="math inline">\(n\)</span>.</p></li>
+<li><p>Involves randomly dividing the set of observations into <span class="math inline">\(k\)</span> groups or “folds” of approximately equal size.</p></li>
+<li><p>The 1st fold is treated as a validation dataset and the model is fitted on the remaining <span class="math inline">\(k-1\)</span> folds.</p></li>
+<li><p>Like with LOOCV, we then calculate the RMSE.</p></li>
+</ul>
+</section>
+<section id="overfitting" class="level3">
+<h3 class="anchored" data-anchor-id="overfitting">Overfitting</h3>
+<p>Even though a complicated model may do very well with modeling training data, the same model will likely be abysmal at modeling unseen data.</p>
+<p><img src="images/clipboard-2429329681.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="practice-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="practice-in-r">Practice in R</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DAAG)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>multregdata <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">'weekly-notes/RegressionData.csv'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(MEDHHINC<span class="sc">~</span>PCTVACANT <span class="sc">+</span> PCTSINGLES, <span class="at">data=</span>multregdata)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>cv <span class="ot">&lt;-</span> <span class="fu">CVlm</span>(<span class="at">data=</span>multregdata, fit, <span class="at">m=</span><span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in CVlm(data = multregdata, fit, m = 5): 
+
+ As there is &gt;1 explanatory variable, cross-validation
+ predicted values for a fold are not a linear function
+ of corresponding overall predicted values.  Lines that
+ are shown for the different folds are approximate</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Lecture8_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+fold 1 
+Observations in test set: 344 
+                  20       27        32        35        36       44        45
+Predicted   30427.45 31748.48 29967.580 34569.727 29909.422 24322.39 31040.684
+cvpred      30471.69 31792.25 30009.864 34608.425 29959.758 24384.51 31065.056
+MEDHHINC    60385.00 64013.00 33182.000 43654.000 35714.000 39778.00 32955.000
+CV residual 29913.31 32220.75  3172.136  9045.575  5754.242 15393.49  1889.944
+                  64       67       69        70        72         75        88
+Predicted   33103.82 35711.44 26444.40 34569.727 29481.423 21337.5440  25855.30
+cvpred      33137.51 35737.44 26503.39 34608.425 29521.902 21345.5735  25872.38
+MEDHHINC    50781.00 61250.00 45000.00 40855.000 36250.000 22109.0000  14922.00
+CV residual 17643.49 25512.56 18496.61  6246.575  6728.098   763.4265 -10950.38
+                    89       91        92        110       117       124
+Predicted   27522.6568 26173.51 17660.766 29534.0114  25438.86 29645.914
+cvpred      27578.9528 26233.18 17741.688 29534.5954  25500.36 29689.116
+MEDHHINC    27857.0000 40778.00 16528.000 29028.0000  12319.00 28352.000
+CV residual   278.0472 14544.82 -1213.688  -506.5954 -13181.36 -1337.116
+                  126       129       140       141      142       148
+Predicted    32919.65  30931.06  31048.28  31213.12 22210.29  27193.47
+cvpred       32929.62  30978.85  31075.04  31238.68 22255.81  27238.16
+MEDHHINC     20167.00  17619.00  18750.00  11750.00 32273.00  15341.00
+CV residual -12762.62 -13359.85 -12325.04 -19488.68 10017.19 -11897.16
+                  154       158       159       161       166       180
+Predicted    22786.89 36896.465  53233.41 18320.186 27181.821 29551.098
+cvpred       22855.01 36852.251  53064.54 18388.296 27223.996 29582.486
+MEDHHINC     11958.00 33125.000   8516.00 20893.000 32656.000 28046.000
+CV residual -10897.01 -3727.251 -44548.54  2504.704  5432.004 -1536.486
+                  184         193       197       202         203      234
+Predicted    34424.73 31489.46231 32893.534  35826.88 29402.94188 17107.81
+cvpred       34432.39 31523.29758 32923.846  35821.53 29426.85455 17190.12
+MEDHHINC     23125.00 31500.00000 36442.000  25000.00 29405.00000 28417.00
+CV residual -11307.39   -23.29758  3518.154 -10821.53   -21.85455 11226.88
+                  246       250       252       253      255       256
+Predicted   31227.347 32342.515 30150.851 30158.666 27817.75 28207.343
+cvpred      31250.121 32362.979 30200.584 30189.602 27855.14 28251.399
+MEDHHINC    25930.000 30096.000 28819.000 28889.000 20625.00 23313.000
+CV residual -5320.121 -2266.979 -1381.584 -1300.602 -7230.14 -4938.399
+                  265       267      275       280       281       288
+Predicted    38317.20 29706.729 15552.53 32659.017 32274.774  35458.47
+cvpred       38295.25 29699.906 15621.53 32702.487 32269.984  35487.28
+MEDHHINC     24306.00 31750.000 33500.00 29464.000 30048.000  20298.00
+CV residual -13989.25  2050.094 17878.47 -3238.487 -2221.984 -15189.28
+                  291        293       299       300       307       314
+Predicted   20733.801 27914.7449 26779.757 26165.078 29329.407  25791.81
+cvpred      20785.589 27939.3141 26824.346 26210.855 29371.643  25837.20
+MEDHHINC    16354.000 28250.0000 26719.000 16310.000 26750.000   9375.00
+CV residual -4431.589   310.6859  -105.346 -9900.855 -2621.643 -16462.20
+                  321       322       327      332      334       338       343
+Predicted   19858.657  29985.26 26368.968 25341.99 24763.74  33267.74 29657.217
+cvpred      19934.091  30013.38 26390.952 25400.00 24793.99  33263.32 29686.466
+MEDHHINC    15531.000  15950.00 33563.000 35781.00 30179.00  14931.00 32150.000
+CV residual -4403.091 -14063.38  7172.048 10381.00  5385.01 -18332.32  2463.534
+                  344       352      353       360       364       365
+Predicted   32532.140 33016.183 31405.44 24444.311 23349.822  44000.12
+cvpred      32555.571 33039.236 31443.35 24508.294 23410.191  43890.08
+MEDHHINC    28158.000 30398.000 27194.00 18810.000 22386.000  23125.00
+CV residual -4397.571 -2641.236 -4249.35 -5698.294 -1024.191 -20765.08
+                  366       369      370       395       405      407       410
+Predicted   25933.394 32587.875 29615.13  28985.54  38256.58 17497.94  32516.01
+cvpred      25993.659 32585.769 29658.69  29029.35  38180.70 17569.30  32518.96
+MEDHHINC    27284.000 27500.000 31346.00  11014.00  17054.00 20445.00  20761.00
+CV residual  1290.341 -5085.769  1687.31 -18015.35 -21126.70  2875.70 -11757.96
+                  411      414       426       431       444       448
+Predicted   27062.454 22491.15 27082.341 26921.100 25408.421 31305.240
+cvpred      27096.957 22553.15 27111.367 26955.864 25458.753 31342.893
+MEDHHINC    19907.000 17181.00 23000.000 18102.000 27500.000 33958.000
+CV residual -7189.957 -5372.15 -4111.367 -8853.864  2041.247  2615.107
+                  456       465       471        472       476       493
+Predicted   27838.487 21087.648 22520.119 21619.2539  23933.83  29175.93
+cvpred      27893.994 21160.013 22588.907 21690.2916  23983.15  29162.85
+MEDHHINC    23917.000 29107.000 31010.000 21250.0000  10037.00  16950.00
+CV residual -3976.994  7946.987  8421.093  -440.2916 -13946.15 -12212.85
+                  496       498       500       512       513       515
+Predicted   30760.297 36114.697 22235.809  25490.86 27174.829 28805.568
+cvpred      30720.413 36125.405 22305.307  25552.23 27171.718 28847.792
+MEDHHINC    21350.000 30208.000 20391.000   8750.00 20750.000 30625.000
+CV residual -9370.413 -5917.405 -1914.307 -16802.23 -6421.718  1777.208
+                  517       522       526       531      532      533       537
+Predicted    29841.14 25339.059 34569.727 33219.271 24382.84 31650.19 31826.404
+cvpred       29891.64 25400.808 34608.425 33230.861 24435.20 31690.86 31847.166
+MEDHHINC     18892.00 33750.000 39583.000 34779.000 35637.00 59583.00 40486.000
+CV residual -10999.64  8349.192  4974.575  1548.139 11201.80 27892.14  8638.834
+                  538      541        545       546        548      549
+Predicted    33224.74 33785.73 29463.4826 31188.784 32542.2855 30930.96
+cvpred       33241.54 33810.78 29509.9248 31235.925 32578.9986 30965.88
+MEDHHINC     16745.00 53073.00 28770.0000 39688.000 33357.0000 43177.00
+CV residual -16496.54 19262.22  -739.9248  8452.075   778.0014 12211.12
+                  553      558       566       570      572       573      576
+Predicted   29236.628 43783.28 20183.662 -2313.059 34569.73  47541.64 24441.69
+cvpred      29288.645 43686.56 20258.285 -2182.259 34608.43  47436.08 24505.68
+MEDHHINC    38043.000 33750.00 26915.000 23269.000 50536.00  36932.00 39500.00
+CV residual  8754.355 -9936.56  6656.715 25451.259 15927.57 -10504.08 14994.32
+                  591       592      609      610      612       629       632
+Predicted   27296.474 27276.422 35670.68 21080.43 33076.14 24933.345 27204.227
+cvpred      27347.342 27333.333 35697.13 21149.06 33097.85 24963.017 27244.918
+MEDHHINC    29875.000 31250.000 63438.00 47461.00 52045.00 27350.000 35208.000
+CV residual  2527.658  3916.667 27740.87 26311.94 18947.15  2386.983  7963.082
+                  639      641       648      650       659       671       681
+Predicted   14300.594 15599.82  32912.62 11872.65  21260.23  31876.70 26174.860
+cvpred      14373.579 15685.89  32955.45 11968.02  21332.17  31913.48 26203.453
+MEDHHINC    11250.000 29306.00  13000.00 28929.00   9458.00  10694.00 29184.000
+CV residual -3123.579 13620.11 -19955.45 16960.98 -11874.17 -21219.48  2980.547
+                  683       692       698       714        719       723
+Predicted    31102.09 14609.062 -13560.48  37589.18 26890.2539 27088.234
+cvpred       31149.44 14682.804 -13401.60  37505.13 26911.7464 27145.615
+MEDHHINC     20550.00 16172.000   9760.00  15938.00 26154.0000 25714.000
+CV residual -10599.44  1489.196  23161.60 -21567.13  -757.7464 -1431.615
+                   728       732       735       743       744       748
+Predicted   26655.2112 25466.866 27435.357 23363.613  27518.52  26422.33
+cvpred      26696.6795 25517.717 27483.421 23369.937  27503.69  26462.33
+MEDHHINC    26528.0000 29125.000 33750.000 18750.000  17422.00  13239.00
+CV residual  -168.6795  3607.283  6266.579 -4619.937 -10081.69 -13223.33
+                  750       751       756      758       761       762
+Predicted    27803.16  31007.23  28757.58 17790.97  27220.94 29334.779
+cvpred       27821.06  30971.36  28716.90 17871.57  27263.26 29374.379
+MEDHHINC     14250.00  12125.00  14830.00 48350.00  10242.00 23438.000
+CV residual -13571.06 -18846.36 -13886.90 30478.43 -17021.26 -5936.379
+                  763       774       791       797       800       805
+Predicted   22558.734 19220.875 17601.969  33515.34 19160.766 36820.825
+cvpred      22598.333 19270.653 17683.038  33481.13 19221.783 36826.687
+MEDHHINC    16172.000 23162.000  9167.000  12260.00 17396.000 35000.000
+CV residual -6426.333  3891.347 -8516.038 -21221.13 -1825.783 -1826.687
+                  820       821       825       828       835       838
+Predicted    25495.74 26817.658 22099.921  25639.59  31438.04  32050.88
+cvpred       25547.84 26858.705 22142.207  25678.13  31456.27  32047.59
+MEDHHINC     14400.00 24191.000 19856.000  10486.00  17566.00  11944.00
+CV residual -11147.84 -2667.705 -2286.207 -15192.13 -13890.27 -20103.59
+                  841       843       846      847       853       855
+Predicted    24522.67  29546.29  22074.66 23888.84  24222.28  33420.32
+cvpred       24517.48  29582.80  22114.00 23939.00  24262.67  33381.13
+MEDHHINC     11625.00  12438.00  11855.00 14205.00  10662.00  13056.00
+CV residual -12892.48 -17144.80 -10259.00 -9734.00 -13600.67 -20325.13
+                  859       862       865       867       872       875
+Predicted    28910.77 31723.889 17414.249 25245.335 32927.160 30000.665
+cvpred       28902.30 31746.933 17468.794 25285.678 32969.961 30047.359
+MEDHHINC     15893.00 23558.000 18565.000 28750.000 31754.000 34605.000
+CV residual -13009.30 -8188.933  1096.206  3464.322 -1215.961  4557.641
+                  878      882       888       889       896         897
+Predicted   34569.727 32681.14  36189.30 34290.371 30487.164 24580.84622
+cvpred      34608.425 32701.35  36209.99 34308.773 30497.411 24617.30964
+MEDHHINC    30481.000 38125.00  25000.00 26429.000 35500.000 24531.00000
+CV residual -4127.425  5423.65 -11209.99 -7879.773  5002.589   -86.30964
+                  900       903       911       917       920       925
+Predicted    34252.56 24652.486 34569.727 33466.957 30073.486  27511.16
+cvpred       34265.37 24689.483 34608.425 33500.674 30109.672  27557.01
+MEDHHINC     22031.00 22188.000 30125.000 35417.000 32961.000  17115.00
+CV residual -12234.37 -2501.483 -4483.425  1916.326  2851.328 -10442.01
+                  926       928       944       945       951       952
+Predicted    29817.17  23854.52  28883.95  40633.48 26138.202  28641.70
+cvpred       29867.74  23867.23  28906.72  40604.74 26190.869  28666.66
+MEDHHINC     17457.00  12083.00  17250.00   9688.00 24643.000  16726.00
+CV residual -12410.74 -11784.23 -11656.72 -30916.74 -1547.869 -11940.66
+                 957       963       966       967       968       974
+Predicted   24448.06 22566.432  33655.05  31373.32 24903.875 18823.522
+cvpred      24512.03 22635.105  33610.30  31396.03 24939.209 18876.253
+MEDHHINC    21250.00 13229.000  20885.00  17045.00 23482.000 23417.000
+CV residual -3262.03 -9406.105 -12725.30 -14351.03 -1457.209  4540.747
+                  976       982       989       992       994     1004     1005
+Predicted    27697.18 22446.997 16345.580  42634.28 22821.352 34501.68 31706.66
+cvpred       27724.43 22502.764 16418.932  42583.29 22856.135 34523.85 31735.00
+MEDHHINC     11789.00 28125.000 23125.000  22222.00 27969.000 48654.00 39450.00
+CV residual -15935.43  5622.236  6706.068 -20361.29  5112.865 14130.15  7715.00
+                1012     1015      1020      1026      1032      1033     1040
+Predicted   34365.47 31471.05 34474.074 32938.069 41269.964 33922.750 33738.65
+cvpred      34396.96 31483.73 34489.539 32956.592 41214.861 33946.544 33737.08
+MEDHHINC    55104.00 42500.00 36316.000 42372.000 42500.000 35200.000 48182.00
+CV residual 20707.04 11016.27  1826.461  9415.408  1285.139  1253.456 14444.92
+                 1046     1047      1051       1052      1058     1065
+Predicted   54713.065 37602.92 38112.675 41717.5742 62739.203 49027.07
+cvpred      54508.522 37597.97 38100.879 41662.4792 62456.723 48883.10
+MEDHHINC    64297.000 53083.00 38269.000 41293.0000 70000.000 80794.00
+CV residual  9788.478 15485.03   168.121  -369.4792  7543.277 31910.90
+                 1068     1072      1073     1084       1097      1098
+Predicted    66949.43 38496.81 36072.948 63806.62 30395.8692  32749.21
+cvpred       66596.89 38463.83 36079.003 63520.17 30440.3781  32792.45
+MEDHHINC    200001.00 62143.00 38750.000 92500.00 30909.0000  15026.00
+CV residual 133404.11 23679.17  2670.997 28979.83   468.6219 -17766.45
+                 1101      1105      1114      1120      1122      1129
+Predicted    29726.59  27769.83 23301.670 38924.590 29408.792 27205.781
+cvpred       29754.07  27825.51 23360.612 38914.857 29423.041 27222.027
+MEDHHINC     13426.00   9609.00 27917.000 40417.000 21630.000 21786.000
+CV residual -16328.07 -18216.51  4556.388  1502.143 -7793.041 -5436.027
+                 1133      1138     1139     1170     1176     1177      1207
+Predicted   24908.721 26728.347 26107.20 36237.48 29099.75 36509.83  43187.13
+cvpred      24960.915 26769.555 26153.89 36207.41 29133.57 36504.47  43129.99
+MEDHHINC    20515.000 31375.000 38047.00 51146.00 42045.00 56667.00  32222.00
+CV residual -4445.915  4605.445 11893.11 14938.59 12911.43 20162.53 -10907.99
+                 1208     1211      1212      1215      1227      1230
+Predicted   30812.318 34266.95 37131.432 31354.441 34569.727 37088.215
+cvpred      30848.515 34285.70 37141.641 31391.342 34608.425 37079.036
+MEDHHINC    39034.000 46250.00 38816.000 27813.000 38092.000 45333.000
+CV residual  8185.485 11964.30  1674.359 -3578.342  3483.575  8253.964
+                 1232      1233      1234      1235      1238      1239
+Predicted   32770.993 30014.084  38757.10 35396.585 30009.991 29996.148
+cvpred      32814.183 30053.759  38749.23 35426.088 30045.653 30028.216
+MEDHHINC    34000.000 36897.000  27250.00 31667.000 33833.000 27461.000
+CV residual  1185.817  6843.241 -11499.23 -3759.088  3787.347 -2567.216
+                1242      1244      1248      1250      1257      1259
+Predicted   41167.71 42601.885 38209.503  51425.18  36502.35 28604.549
+cvpred      41060.36 42501.782 38181.876  51250.91  36489.27 28642.942
+MEDHHINC    52083.00 46250.000 34100.000  31705.00  24609.00 25517.000
+CV residual 11022.64  3748.218 -4081.876 -19545.91 -11880.27 -3125.942
+                 1261     1271      1279      1286      1287      1293
+Predicted   35649.640 31690.74  35231.80 25967.349  33369.05 27533.842
+cvpred      35663.129 31736.63  35263.13 26027.529  33390.10 27569.973
+MEDHHINC    27731.000 41859.00   9472.00 20536.000  10197.00 26371.000
+CV residual -7932.129 10122.37 -25791.13 -5491.529 -23193.10 -1198.973
+                  1296      1297      1307       1312      1316      1318
+Predicted   28242.2097 37227.992 22138.127 32932.3723 22557.001 37638.822
+cvpred      28283.1226 37216.155 22207.869 32954.8089 22590.083 37619.175
+MEDHHINC    28929.0000 28583.000 31458.000 32679.0000 24722.000 30216.000
+CV residual   645.8774 -8633.155  9250.131  -275.8089  2131.917 -7403.175
+                 1319      1323      1335      1338      1342      1365
+Predicted   32943.474 27368.479 33692.978 32323.634  37258.97 32592.730
+cvpred      32962.932 27418.284 33685.355 32330.765  37232.46 32636.365
+MEDHHINC    40250.000 23750.000 36364.000 23833.000  17054.00 37596.000
+CV residual  7287.068 -3668.284  2678.645 -8497.765 -20178.46  4959.635
+                 1367      1381      1396      1397      1402      1406
+Predicted   37181.640  38813.12  32091.76  31786.80  38243.14 23333.953
+cvpred      37146.247  38763.22  32104.49  31832.45  38223.29 23369.898
+MEDHHINC    34226.000  12375.00  19792.00  19345.00  21094.00 18854.000
+CV residual -2920.247 -26388.22 -12312.49 -12487.45 -17129.29 -4515.898
+                 1408      1409      1412       1416     1417      1419
+Predicted   26858.408  30549.79 21808.164 43737.8461 34626.32 32787.493
+cvpred      26898.758  30588.45 21871.366 43674.5846 34653.90 32795.168
+MEDHHINC    35750.000  17756.00 27813.000 43214.0000 64844.00 27852.000
+CV residual  8851.242 -12832.45  5941.634  -460.5846 30190.10 -4943.168
+                 1424     1427      1428      1429      1430      1432
+Predicted   30330.488 34386.48 33383.089 37124.246 21817.865 34006.190
+cvpred      30365.216 34404.55 33414.209 37134.535 21888.407 34031.609
+MEDHHINC    39423.000 35727.00 30069.000 40216.000 23894.000 24167.000
+CV residual  9057.784  1322.45 -3345.209  3081.465  2005.593 -9864.609
+                 1434     1436     1447     1455      1465        1467
+Predicted   33990.855 31618.63 40707.23 38029.63  68913.95 40920.55449
+cvpred      34003.635 31655.26 40643.93 38010.70  68534.00 40888.62449
+MEDHHINC    26955.000 34922.00 50745.00 59737.00  32679.00 40865.00000
+CV residual -7048.635  3266.74 10101.07 21726.30 -35855.00   -23.62449
+                 1478      1480      1495      1511      1518      1526
+Predicted   30352.333 31557.347 29892.185 31632.444 34120.354 34333.183
+cvpred      30401.563 31592.256 29919.406 31678.477 34143.878 34349.627
+MEDHHINC    37895.000 38869.000 32765.000 34458.000 37022.000 42386.000
+CV residual  7493.437  7276.744  2845.594  2779.523  2878.122  8036.373
+                 1529      1530      1531      1533      1545     1561
+Predicted   37594.100 31035.536 36631.189 35232.622 32655.547 34685.02
+cvpred      37558.385 31066.732 36646.961 35257.725 32660.925 34701.08
+MEDHHINC    36298.000 36339.000 40521.000 39653.000 31250.000 45809.00
+CV residual -1260.385  5272.268  3874.039  4395.275 -1410.925 11107.92
+                 1566      1571      1572      1576      1577      1580
+Predicted    34569.73 38024.844 36361.004 25523.751 36688.451 31785.865
+cvpred       34608.43 37988.225 36354.599 25585.039 36674.491 31831.515
+MEDHHINC     22679.00 30909.000 39167.000 23611.000 40112.000 38068.000
+CV residual -11929.43 -7079.225  2812.401 -1974.039  3437.509  6236.485
+                  1581     1590      1591      1595      1598     1604     1608
+Predicted   30771.3640 37280.24 35956.620 67584.879 34695.524 34586.29 35584.15
+cvpred      30805.9218 37288.79 35979.895 67242.609 34709.521 34606.45 35587.24
+MEDHHINC    31667.0000 54792.00 43929.000 59286.000 27610.000 47431.00 28882.00
+CV residual   861.0782 17503.21  7949.105 -7956.609 -7099.521 12824.55 -6705.24
+                 1609      1613      1614      1620      1621      1622
+Predicted   38213.717 36555.149 35706.746 46068.216 39394.589 42195.746
+cvpred      38189.074 36548.019 35704.927 45956.779 39343.224 42149.634
+MEDHHINC    34583.000 45417.000 43281.000 36172.000 46992.000 39643.000
+CV residual -3606.074  8868.981  7576.073 -9784.779  7648.776 -2506.634
+                 1627      1630      1631     1637      1639      1645     1667
+Predicted   40766.454  36977.48 41752.429 43927.86 53168.529 32930.292 41870.15
+cvpred      40719.125  36967.63 41686.356 43846.37 52992.364 32969.089 41810.04
+MEDHHINC    45357.000  25583.00 39167.000 36354.00 60638.000 28229.000 56034.00
+CV residual  4637.875 -11384.63 -2519.356 -7492.37  7645.636 -4740.089 14223.96
+                 1668      1683     1689      1690     1693     1702     1705
+Predicted    62634.38 34134.963 39874.73  62320.92 49921.41 36294.51 56822.60
+cvpred       62360.97 34163.923 39854.43  62048.66 49776.00 36292.24 56613.82
+MEDHHINC     47308.00 41479.000 75584.00  49450.00 45539.00 57917.00 86182.00
+CV residual -15052.97  7315.077 35729.57 -12598.66 -4237.00 21624.76 29568.18
+                1707      1711     1712     1713     1715     1716
+Predicted   41595.22 37071.885 35229.58 34379.46 34569.73 45267.45
+cvpred      41540.51 37072.672 35260.94 34414.84 34608.43 45187.18
+MEDHHINC    65650.00 44926.000 61944.00 48333.00 51250.00 56506.00
+CV residual 24109.49  7853.328 26683.06 13918.16 16641.57 11318.82
+
+Sum of squares = 68351187168    Mean square = 198695312    n = 344 
+
+fold 2 
+Observations in test set: 344 
+                    3        10        13        21       28        31       41
+Predicted    53233.41 19360.506 30307.081  34569.73 29712.45  33191.49 35138.98
+cvpred       52972.47 19273.319 30645.314  35073.62 29952.93  33546.12 35382.70
+MEDHHINC     26875.00 10515.000 33550.000  14932.00 87819.00  21771.00 53947.00
+CV residual -26097.47 -8758.319  2904.686 -20141.62 57866.07 -11775.12 18564.30
+                   48        49        50        59       60        63       68
+Predicted    33989.41 25797.538 29741.531 25175.631 29514.21 21425.927 33201.64
+cvpred       33988.22 25469.193 29647.297 25160.214 29653.72 21297.312 33468.02
+MEDHHINC     14038.00 21413.000 22857.000 20250.000 50260.00 19519.000 49643.00
+CV residual -19950.22 -4056.193 -6790.297 -4910.214 20606.28 -1778.312 16174.98
+                  71        81        83        84         87        90
+Predicted   28902.90  31329.73  28905.10 26024.523 19348.8669 18983.146
+cvpred      29094.45  31259.06  28458.26 26196.322 19135.5493 18849.492
+MEDHHINC    39784.00  21083.00  17429.00 22115.000 19375.0000 21121.000
+CV residual 10689.55 -10176.06 -11029.26 -4081.322   239.4507  2271.508
+                   94       98      100       103      107       109       114
+Predicted   26041.122 29434.01 25943.49 35999.788 35009.67 26516.935  32330.56
+cvpred      25919.949 29507.91 25743.15 35957.964 34954.46 26580.899  32450.40
+MEDHHINC    31250.000 37431.00 43214.00 33021.000 59107.00 27794.000  14821.00
+CV residual  5330.051  7923.09 17470.85 -2936.964 24152.54  1213.101 -17629.40
+                  115       116       120       123       127       130
+Predicted   18735.620 23407.148  30600.27  33032.56  35351.57 26316.338
+cvpred      18508.925 23367.477  30828.80  33108.45  35440.08 26348.848
+MEDHHINC    28365.000 22308.000  19467.00  16027.00  23656.00 24250.000
+CV residual  9856.075 -1059.477 -11361.80 -17081.45 -11784.08 -2098.848
+                  131       132       136       137       145       152
+Predicted   26442.530 30021.148  28314.70 28205.214  29226.01  26967.35
+cvpred      26630.574 30348.269  28252.06 28049.229  29325.94  26711.66
+MEDHHINC    35125.000 37639.000  17125.00 29500.000  18977.00  16300.00
+CV residual  8494.426  7290.731 -11127.06  1450.771 -10348.94 -10411.66
+                  155       156      160       164        171      190      191
+Predicted   33539.148 27269.714 18188.74  30179.18 18977.5156 34569.73 33961.36
+cvpred      33579.696 27236.103 17923.81  30443.59 18547.6896 35073.62 34221.75
+MEDHHINC    35625.000 24609.000 33224.00  19352.00 19063.0000 50096.00 50341.00
+CV residual  2045.304 -2627.103 15300.19 -11091.59   515.3104 15022.38 16119.25
+                  195       206       208       209       211       217
+Predicted    30075.19 32364.160  25159.83 26574.573 23549.713 28475.765
+cvpred       30304.35 32568.662  24862.03 26393.186 23552.022 28742.827
+MEDHHINC     18859.00 27404.000  13397.00 20638.000 20286.000 30565.000
+CV residual -11445.35 -5164.662 -11465.03 -5755.186 -3266.022  1822.173
+                  219       221       226       229       232       239
+Predicted   29622.366 30797.021 31199.660 37184.455  5083.902  37795.55
+cvpred      29662.882 31028.996 31451.639 37418.528  4353.562  38167.25
+MEDHHINC    31786.000 36346.000 37206.000 28229.000 43029.000  25781.00
+CV residual  2123.118  5317.004  5754.361 -9189.528 38675.438 -12386.25
+                 240       245        248       259      260        277
+Predicted   34569.73 26782.354 34821.5241  30411.97 27511.18 30721.7039
+cvpred      35073.62 26802.335 35119.5384  30364.33 27140.65 30786.2966
+MEDHHINC    28352.00 24844.000 34338.0000  12266.00 19118.00 31250.0000
+CV residual -6721.62 -1958.335  -781.5384 -18098.33 -8022.65   463.7034
+                  284       294       295       298       308       318
+Predicted    27751.04  33572.82 29017.383 31165.953 31948.795  20193.01
+cvpred       27989.94  33815.53 29086.659 31243.019 31950.593  19856.94
+MEDHHINC     17330.00  18304.00 19333.000 36384.000 25417.000   9327.00
+CV residual -10659.94 -15511.53 -9753.659  5140.981 -6533.593 -10529.94
+                  319       324       325      328        348       355
+Predicted    33752.56  27635.28 25884.920 26915.86 31402.4249 27402.192
+cvpred       34122.42  27606.71 26007.187 26949.14 31703.1116 27627.531
+MEDHHINC     16548.00  17000.00 29808.000 39028.00 32000.0000 24028.000
+CV residual -17574.42 -10606.71  3800.813 12078.86   296.8884 -3599.531
+                  357      362        368       376       384       385
+Predicted    33690.88 27030.71 31695.3141 25137.591 27353.881  28468.84
+cvpred       33870.87 27133.20 31859.4936 25101.067 27577.343  28735.63
+MEDHHINC     22292.00 30048.00 31576.0000 19539.000 34856.000  15060.00
+CV residual -11578.87  2914.80  -283.4936 -5562.067  7278.657 -13675.63
+                  390       399       404       408       419       420
+Predicted   30185.555  33731.28  33451.53 19023.865  30631.05  23378.01
+cvpred      30519.065  34079.43  33911.96 18855.417  30892.54  23329.38
+MEDHHINC    25984.000  20294.00   7093.00 22083.000  13080.00  12396.00
+CV residual -4535.065 -13785.43 -26818.96  3227.583 -17812.54 -10933.38
+                  422      432      434       436       449      450       452
+Predicted    35587.74 23824.03 34569.73 31629.461 24448.997 24251.44 26189.768
+cvpred       35500.13 23756.91 35073.62 31968.202 24428.523 24354.33 26009.528
+MEDHHINC     23864.00 36053.00 36094.00 41292.000 28050.000 38750.00 33235.000
+CV residual -11636.13 12296.09  1020.38  9323.798  3621.477 14395.67  7225.472
+                 463       469       473       474       478       480
+Predicted   23242.00 13382.265  31414.45 13936.902 20729.135  5336.460
+cvpred      23135.22 13062.744  31607.50 13571.199 20562.255  4704.253
+MEDHHINC    37188.00 21176.000   7214.00 15714.000 18056.000 29531.000
+CV residual 14052.78  8113.256 -24393.50  2142.801 -2506.255 24826.747
+                  483       486       491       492       494       505
+Predicted   21260.231  30607.36  23258.08 27491.596 18043.616 17412.582
+cvpred      21246.874  30227.08  23086.43 27277.637 17639.064 16996.573
+MEDHHINC    13875.000  14643.00   9640.00 18194.000 18790.000 14286.000
+CV residual -7371.874 -15584.08 -13446.43 -9083.637  1150.936 -2710.573
+                   506       507       508      514       516      518
+Predicted   22053.3644 19966.513 14754.816 11390.14 29383.949 24940.65
+cvpred      22070.8308 19902.878 14488.637 10975.09 29501.768 25070.33
+MEDHHINC    22917.0000 25469.000 20809.000 30972.00 23472.000 36125.00
+CV residual   846.1692  5566.122  6320.363 19996.91 -6029.768 11054.67
+                  528       539        540       542      543       560
+Predicted   31221.859  53334.57 40945.2754 56009.067 33293.87 35797.982
+cvpred      31396.954  53069.48 40966.4095 55634.378 33659.59 36061.378
+MEDHHINC    21607.000 105512.00 41490.0000 52969.000 55564.00 32656.000
+CV residual -9789.954  52442.52   523.5905 -2665.378 21904.41 -3405.378
+                 564       569      574       577       582      586        587
+Predicted   18460.95 30182.851 37747.81  38833.23 -3563.459 34569.73 18701.0080
+cvpred      18338.81 30423.533 37717.40  39162.40 -4541.547 35073.62 18588.1908
+MEDHHINC    29740.00 35795.000 60417.00  24792.00 14250.000 41250.00 19167.0000
+CV residual 11401.19  5371.467 22699.60 -14370.40 18791.547  6176.38   578.8092
+                  589      596       601       603       604       607      618
+Predicted   32948.507 30030.75 25531.076 31330.096 35295.623 31803.342 22303.72
+cvpred      33389.394 30320.77 25486.416 31708.086 35543.241 32199.724 22330.92
+MEDHHINC    40776.000 47466.00 29167.000 28750.000 31875.000 40380.000 40278.00
+CV residual  7386.606 17145.23  3680.584 -2958.086 -3668.241  8180.276 17947.08
+                  621       627       628      634       635       645      653
+Predicted   23138.763  27700.79 15727.485 10967.95  3855.103  21667.16 20485.89
+cvpred      23023.261  27614.73 14820.252 10238.50  3047.460  21315.48 20442.43
+MEDHHINC    18125.000  11534.00 20938.000 20921.00 11696.000  11023.00 31538.00
+CV residual -4898.261 -16080.73  6117.748 10682.50  8648.540 -10292.48 11095.57
+                  666       668       673       677       678       682
+Predicted    9261.292  26035.21 31642.415  26959.76 18509.460 26874.456
+cvpred       8431.108  26079.99 31622.327  27126.75 17821.165 27079.286
+MEDHHINC    16667.000   8667.00 29181.000   9097.00 19600.000 21071.000
+CV residual  8235.892 -17412.99 -2441.327 -18029.75  1778.835 -6008.286
+                 684         689       693       696       697       701
+Predicted   16164.69 17773.25687 20231.473 30190.146  31501.93  8856.490
+cvpred      15953.31 17386.82097 19965.919 30272.047  31779.94  8278.294
+MEDHHINC    33750.00 17404.00000 22708.000 21591.000  11974.00 17313.000
+CV residual 17796.69    17.17903  2742.081 -8681.047 -19805.94  9034.706
+                  702       703      705       708       711       717      718
+Predicted    23969.66 17850.118 11630.32 17803.530  38398.17 44023.346 34569.73
+cvpred       23936.78 17285.699 11086.44 17259.713  38745.18 43975.084 35073.62
+MEDHHINC      9653.00 10750.000 51125.00 13807.000  14821.00 38000.000 40000.00
+CV residual -14283.78 -6535.699 40038.56 -3452.713 -23924.18 -5975.084  4926.38
+                  722       740       766       770       776       781
+Predicted   30720.262  33463.90 23618.062 22866.533  24817.07 16572.714
+cvpred      30515.198  33444.98 23566.598 22915.602  24941.94 15970.559
+MEDHHINC    21029.000  20625.00 14844.000 19167.000  14615.00 12400.000
+CV residual -9486.198 -12819.98 -8722.598 -3748.602 -10326.94 -3570.559
+                  782       783       793       795       796       814
+Predicted   29063.480 19136.758 30056.185  26547.66  28115.65 27982.765
+cvpred      29061.894 18923.142 30308.526  26290.94  28148.90 28132.548
+MEDHHINC    19787.000 11250.000 28207.000  14080.00  16850.00 26813.000
+CV residual -9274.894 -7673.142 -2101.526 -12210.94 -11298.90 -1319.548
+                  815       817       824       829      831       833
+Predicted   28120.735  29733.28 24631.334  33317.99 21649.99  28360.11
+cvpred      28061.185  29584.75 24420.076  33071.73 21557.52  28170.38
+MEDHHINC    21106.000  18712.00 22813.000  21950.00 25101.00  12953.00
+CV residual -6955.185 -10872.75 -1607.076 -11121.73  3543.48 -15217.38
+                  837       840       849       858        871       874
+Predicted   21484.031  26339.89 28398.730 20804.167 31841.2641  38129.57
+cvpred      21427.365  26146.72 28111.048 20557.216 31780.9029  38487.58
+MEDHHINC    12353.000  12375.00 18370.000 16636.000 31250.0000  25944.00
+CV residual -9074.365 -13771.72 -9741.048 -3921.216  -530.9029 -12543.58
+                  884        885       899       907       916       921
+Predicted   37413.259 34714.4803 20982.877 27344.454 34455.195 29803.313
+cvpred      37543.742 34802.5378 20888.675 27365.755 34832.634 30121.968
+MEDHHINC    31063.000 34700.0000 24375.000 23452.000 37083.000 25735.000
+CV residual -6480.742  -102.5378  3486.325 -3913.755  2250.366 -4386.968
+                  923       930       931       934       935       939
+Predicted    35869.48 23105.384 31304.632  26313.28 31616.845  27894.78
+cvpred       36262.16 22893.672 31355.443  26241.11 31480.711  27939.86
+MEDHHINC     24358.00 20275.000 24091.000  15750.00 22629.000  11923.00
+CV residual -11904.16 -2618.672 -7264.443 -10491.11 -8851.711 -16016.86
+                  940       946       948       954       958        959
+Predicted    25415.87  34569.73  29123.58  35323.54 28734.581 29801.2736
+cvpred       25294.67  35073.62  29125.28  35457.24 28952.264 29780.9297
+MEDHHINC     13854.00  14962.00  10329.00  10556.00 20000.000 30272.0000
+CV residual -11440.67 -20111.62 -18796.28 -24901.24 -8952.264   491.0703
+                  961       964      965       985       986      995       999
+Predicted    33885.64  36647.87 22237.65  26194.70 21963.701 28188.95  28234.26
+cvpred       33990.41  36431.44 22116.18  26045.08 21713.207 28185.65  28471.24
+MEDHHINC     10000.00  16607.00 20069.00  13594.00 24779.000 29551.00  12780.00
+CV residual -23990.41 -19824.44 -2047.18 -12451.08  3065.793  1365.35 -15691.24
+                 1017      1041      1044      1054      1055     1061     1062
+Predicted   39110.325 38021.245 37450.381 75940.927 49108.202 70349.35 70952.13
+cvpred      39428.145 38209.445 37575.988 74749.432 48719.917 69267.39 69965.07
+MEDHHINC    49091.000 42500.000 40598.000 81547.000 47404.000 87500.00 84543.00
+CV residual  9662.855  4290.555  3022.012  6797.568 -1315.917 18232.61 14577.93
+                 1067      1078      1085     1088     1089      1091      1095
+Predicted   41751.674  78118.36  44180.73 40532.17 36044.92 36457.250 36045.373
+cvpred      41753.601  76837.63  44145.40 40402.76 35955.36 36579.386 36149.538
+MEDHHINC    51641.000 158071.00 101533.00 60375.00 47931.00 30996.000 32037.000
+CV residual  9887.399  81233.37  57387.60 19972.24 11975.64 -5583.386 -4112.538
+                 1099      1106      1110      1116      1118       1124
+Predicted   25065.828 32660.597  28714.14 22313.840 29630.242 30780.8726
+cvpred      25086.158 32506.896  28770.33 22268.035 29495.497 30663.3727
+MEDHHINC    29250.000 34297.000   9388.00 30903.000 27188.000 30917.0000
+CV residual  4163.842  1790.104 -19382.33  8634.965 -2307.497   253.6273
+                 1126      1128     1143      1147      1148      1153
+Predicted   29679.810  33122.44 31603.12 36168.268 29821.183 34755.918
+cvpred      29548.431  32987.40 31909.77 36382.671 29899.266 35124.398
+MEDHHINC    19625.000  21875.00 33482.00 45208.000 36518.000 40714.000
+CV residual -9923.431 -11112.40  1572.23  8825.329  6618.734  5589.602
+                 1155      1161      1163      1164      1187      1191
+Predicted   34259.379 37547.637 34508.251 33665.855 39541.596 47026.384
+cvpred      34623.743 37503.549 34709.066 33968.056 39717.153 46794.133
+MEDHHINC    31135.000 27679.000 26216.000 35592.000 47500.000 39955.000
+CV residual -3488.743 -9824.549 -8493.066  1623.944  7782.847 -6839.133
+                 1194     1195      1200       1206      1209     1213
+Predicted   45052.277 35458.47 71177.295 31613.7404 36897.793 36298.28
+cvpred      44994.288 35925.94 70066.446 31856.8187 37306.283 36545.90
+MEDHHINC    48438.000 47857.00 61786.000 31375.0000 38693.000 48169.00
+CV residual  3443.712 11931.06 -8280.446  -481.8187  1386.717 11623.10
+                 1217      1218       1223      1226      1231      1237
+Predicted   25778.600 38451.478 31597.4903 30033.632 34025.552 28167.986
+cvpred      25940.841 38796.297 31985.8729 30361.237 34232.677 28423.087
+MEDHHINC    29464.000 37614.000 31719.0000 28947.000 38438.000 31641.000
+CV residual  3523.159 -1182.297  -266.8729 -1414.237  4205.323  3217.913
+                 1240      1243      1246      1249     1254      1256
+Predicted   33323.267 28286.460 66905.239 58169.102 33471.09 32806.500
+cvpred      33467.828 28381.512 66084.026 57421.119 33800.83 33129.445
+MEDHHINC    29265.000 26667.000 57727.000 54583.000 45417.00 36283.000
+CV residual -4202.828 -1714.512 -8357.026 -2838.119 11616.17  3153.555
+                 1268      1274      1275       1276      1278      1280
+Predicted   39486.498 32180.545 33397.767 29756.6714 31670.264 33284.935
+cvpred      39788.903 32472.807 33542.171 30008.1554 31749.972 33472.794
+MEDHHINC    29943.000 34375.000 31630.000 29821.0000 34188.000 38199.000
+CV residual -9845.903  1902.193 -1912.171  -187.1554  2438.028  4726.206
+                 1281      1282      1284      1285      1291     1295
+Predicted   32980.538 28668.509 30506.416 25550.405 30368.561 34569.73
+cvpred      33061.549 28943.061 30536.299 25577.185 30709.184 35073.62
+MEDHHINC    37632.000 32361.000 24167.000 31781.000 26823.000 28182.00
+CV residual  4570.451  3417.939 -6369.299  6203.815 -3886.184 -6891.62
+                 1298      1305      1306      1309      1310     1311
+Predicted    35995.42 32286.007 35001.800 34841.472 36758.089 29053.81
+cvpred       36107.80 32617.698 35164.667 34705.865 37172.304 29343.34
+MEDHHINC     25263.00 27031.000 45104.000 30556.000 39167.000 40326.00
+CV residual -10844.80 -5586.698  9939.333 -4149.865  1994.696 10982.66
+                 1315      1320      1332     1333      1336      1337
+Predicted   43448.553  30932.65 35872.353 23839.38 29577.869  32669.83
+cvpred      43588.593  30955.48 35950.263 23647.51 29739.351  32663.07
+MEDHHINC    47891.000   9922.00 34076.000 34018.00 37778.000  21121.00
+CV residual  4302.407 -21033.48 -1874.263 10370.49  8038.649 -11542.07
+                 1341      1343      1359      1368      1382      1388
+Predicted   36034.727 32323.482 29045.137 29004.412 29094.540  37509.46
+cvpred      36182.755 32326.141 29109.518 29170.552 28924.407  37519.12
+MEDHHINC    27760.000 25682.000 20139.000 34423.000 20370.000  24118.00
+CV residual -8422.755 -6644.141 -8970.518  5252.448 -8554.407 -13401.12
+                 1391      1401      1403     1404      1405      1407
+Predicted   29907.916  39565.73  28491.27 34033.94  33638.07 18545.853
+cvpred      30101.856  39541.28  28521.69 34517.01  34029.13 17834.842
+MEDHHINC    23214.000  12000.00  14853.00 41250.00  20750.00 24896.000
+CV residual -6887.856 -27541.28 -13668.69  6732.99 -13279.13  7061.158
+                   1415      1431      1433      1441      1442     1443
+Predicted   37825.57360 25267.951 29740.086 35554.971 33166.991 31172.87
+cvpred      37792.74698 25339.387 29682.072 36018.489 33518.974 31544.75
+MEDHHINC    37750.00000 32330.000 31685.000 45769.000 31848.000 41750.00
+CV residual   -42.74698  6990.613  2002.928  9750.511 -1670.974 10205.25
+                 1445      1446      1450      1451      1458      1461
+Predicted   36276.297 36502.400  36515.80 44386.537 39960.017 32620.215
+cvpred      36475.918 36590.776  36531.31 44308.874 40002.694 32980.566
+MEDHHINC    34205.000 41964.000  25595.00 38696.000 43819.000 28958.000
+CV residual -2270.918  5373.224 -10936.31 -5612.874  3816.306 -4022.566
+                 1470       1486      1494     1497     1512      1513     1520
+Predicted   34080.941 33987.6267 33938.271 32742.43 31322.61 36137.478 31131.98
+cvpred      34263.884 34299.2867 34275.057 33134.08 31700.31 36577.125 31502.28
+MEDHHINC    41563.000 34135.0000 28571.000 47083.00 44196.00 31806.000 50000.00
+CV residual  7299.116  -164.2867 -5704.057 13948.92 12495.69 -4771.125 18497.72
+                  1521       1525      1527      1539      1554     1558
+Predicted   33313.0224 28351.5269 34359.780 32806.952 28958.880 32379.41
+cvpred      33768.0762 28522.6582 34483.802 33166.931 28885.022 32567.78
+MEDHHINC    33235.0000 28802.0000 38446.000 39118.000 26875.000 51063.00
+CV residual  -533.0762   279.3418  3962.198  5951.069 -2010.022 18495.22
+                 1565      1573      1574      1579      1585      1588
+Predicted   41463.804 29496.970 32665.508 32160.679 31473.317 35522.642
+cvpred      41570.048 29803.719 33095.397 32570.949 31788.546 35730.223
+MEDHHINC    34281.000 30875.000 35469.000 34453.000 39855.000 31429.000
+CV residual -7289.048  1071.281  2373.603  1882.051  8066.454 -4301.223
+                1592       1602      1605      1607      1615     1616     1636
+Predicted   35012.44 35040.1839 36343.659 48356.874 36743.569 35415.31 52957.18
+cvpred      35317.91 35368.5182 36599.086 48181.991 36954.969 35884.55 52292.27
+MEDHHINC    51250.00 36210.0000 45607.000 53500.000 40906.000 50278.00 68750.00
+CV residual 15932.09   841.4818  9007.914  5318.009  3951.031 14393.45 16457.73
+                 1648      1649       1652      1662      1676      1680
+Predicted   37178.139 33573.818 33870.3861 35325.159  50617.64  78118.36
+cvpred      37418.038 33928.555 34244.3711 35568.337  50266.94  76837.63
+MEDHHINC    38466.000 40709.000 34821.0000 40877.000  35652.00  50956.00
+CV residual  1047.962  6780.445   576.6289  5308.663 -14614.94 -25881.63
+                 1688     1699      1709     1714      1718       1719
+Predicted   40222.688 33754.67 35303.796 34849.81 47980.271 62737.3736
+cvpred      40494.923 34142.86 35563.762 35302.98 47681.002 62086.9597
+MEDHHINC    47273.000 48750.00 43988.000 59302.00 42348.000 62353.0000
+CV residual  6778.077 14607.14  8424.238 23999.02 -5333.002   266.0403
+
+Sum of squares = 55527813954    Mean square = 161418064    n = 344 
+
+fold 3 
+Observations in test set: 344 
+                   2         6       11       15        19        25       30
+Predicted   34569.73  34569.73 24100.39 31187.35 37089.059  28163.63 32232.02
+cvpred      33712.60  33712.60 24073.74 30598.53 36150.266  27859.89 31560.33
+MEDHHINC    46304.00   2499.00 41563.00 44890.00 34904.000 117991.00 68333.00
+CV residual 12591.40 -31213.60 17489.26 14291.47 -1246.266  90131.11 36772.67
+                   37       39       42       43        47       54       57
+Predicted   32883.373 30955.41 35374.94 33066.12 28616.473 21928.28 28269.68
+cvpred      32283.998 30384.99 34560.34 32374.39 28328.199 22073.93 28005.54
+MEDHHINC    31216.000 40489.00 74010.00 51858.00 21492.000 65272.00 31722.00
+CV residual -1067.998 10104.01 39449.66 19483.61 -6836.199 43198.07  3716.46
+                   61         62        74        82        85        86
+Predicted   32691.248 34553.6268 26378.187 26887.626 23023.978 23834.343
+cvpred      32009.836 33927.3002 26376.703 26639.877 23185.781 23935.182
+MEDHHINC    40625.000 34050.0000 30833.000 24750.000 17386.000 28017.000
+CV residual  8615.164   122.6998  4456.297 -1889.877 -5799.781  4081.818
+                   96       108       128       133       144       149
+Predicted   33602.118 39043.913  33821.63 30086.572 19733.060 21523.577
+cvpred      32926.504 38041.749  33139.67 29633.938 20317.923 21910.578
+MEDHHINC    31731.000 42969.000  21364.00 28125.000 17135.000 19471.000
+CV residual -1195.504  4927.251 -11775.67 -1508.938 -3182.923 -2439.578
+                  150       153       165      167      175       185       186
+Predicted   15289.043  28337.74  31448.88 16601.17 33511.82 32986.733 33774.139
+cvpred      15961.338  28180.03  30839.31 17169.39 32738.62 32324.554 33097.252
+MEDHHINC    14274.000  16016.00  20089.00 29821.00 43512.00 31010.000 35096.000
+CV residual -1687.338 -12164.03 -10750.31 12651.61 10773.38 -1314.554  1998.748
+                  188      189       200       205       214       223
+Predicted   35290.908 34569.73 31735.351 33186.992 32525.507 33556.107
+cvpred      34495.959 33712.60 31295.965 32539.272 31830.539 32813.624
+MEDHHINC    26513.000 68750.00 25104.000 26000.000 23826.000 35104.000
+CV residual -7982.959 35037.40 -6191.965 -6539.272 -8004.539  2290.376
+                  228      236       241      242       244       247       249
+Predicted   34149.151 33332.45  37189.18 34194.11 30209.315 33189.982 35267.042
+cvpred      33517.819 32606.24  36247.14 33467.31 29788.681 32469.229 34495.483
+MEDHHINC    36042.000 46250.00  13750.00 30793.00 22500.000 38472.000 32284.000
+CV residual  2524.181 13643.76 -22497.14 -2674.31 -7288.681  6002.771 -2211.483
+                  270       273       276       282      286      292       296
+Predicted   24538.436 30186.235 29373.393 27766.770 27412.20 24050.95 23961.890
+cvpred      24477.033 29729.056 29059.048 27449.283 27291.89 24056.20 23946.221
+MEDHHINC    29659.000 26250.000 23813.000 23879.000 24605.00 27639.00 31500.000
+CV residual  5181.967 -3479.056 -5246.048 -3570.283 -2686.89  3582.80  7553.779
+                  297       302        306       309       320       326
+Predicted   26025.549 36515.086 19590.5816 30261.500 25770.423  36102.25
+cvpred      26088.626 35799.843 19976.0304 29954.297 25743.252  35195.44
+MEDHHINC    23750.000 28309.000 20648.0000 23382.000 20924.000  20400.00
+CV residual -2338.626 -7490.843   671.9696 -6572.297 -4819.252 -14795.44
+                 331       333       341       351      358       359       361
+Predicted   27784.48 30695.705 30973.017 38924.590 16614.16 24531.424 27694.901
+cvpred      27516.50 30253.946 30444.053 37926.294 17181.34 24584.063 27460.639
+MEDHHINC    52250.00 27984.000 22262.000 47788.000 29875.00 18125.000 31667.000
+CV residual 24733.50 -2269.946 -8182.053  9861.706 12693.66 -6459.063  4206.361
+                  363       367       372        378       382       383
+Predicted   25315.187 26683.085 26298.340 25164.4165 29381.436 10283.217
+cvpred      25300.249 26451.561 26258.309 25053.3587 28935.868 11393.243
+MEDHHINC    20457.000 29519.000 21850.000 24650.0000 21154.000  4178.000
+CV residual -4843.249  3067.439 -4408.309  -403.3587 -7781.868 -7215.243
+                  391     392       403       409       415       418       421
+Predicted   29234.943 24810.7 30637.953 24738.691 22857.163 25603.563 26024.630
+cvpred      28800.996 24727.7 30092.714 24708.703 22985.475 25609.922 25882.612
+MEDHHINC    26083.000 31029.0 32857.000 18281.000 25000.000 22500.000 17146.000
+CV residual -2717.996  6301.3  2764.286 -6427.703  2014.525 -3109.922 -8736.612
+                  423       427      435      440       441       445       446
+Predicted   28147.016 24618.626 31801.37 33518.70  74929.43 34673.240 31069.692
+cvpred      28065.038 24702.174 31197.02 32847.08  72833.12 34090.495 30490.205
+MEDHHINC    20625.000 23452.000 35050.00 46250.00 106723.00 25667.000 31563.000
+CV residual -7440.038 -1250.174  3852.98 13402.92  33889.88 -8423.495  1072.795
+                   453       459       460       467       468       495
+Predicted   25965.1528  34350.29 24538.436  32959.39  32655.21  30366.26
+cvpred      25893.6957  33753.49 24477.033  32353.33  32125.04  30253.77
+MEDHHINC    24934.0000  16429.00 16726.000  16726.00  13482.00  12128.00
+CV residual  -959.6957 -17324.49 -7751.033 -15627.33 -18643.04 -18125.77
+                  497       501      510       519       521       523
+Predicted    31453.84  31848.88 32165.05  38338.64 28392.834 20106.380
+cvpred       30970.98  31502.15 31593.30  37461.10 28173.352 20455.328
+MEDHHINC      9427.00  12117.00 23800.00  23289.00 35972.000 24875.000
+CV residual -21543.98 -19385.15 -7793.30 -14172.10  7798.648  4419.672
+                  527      551       555      557       575       580       581
+Predicted   34631.670 33004.51 26356.343 61103.18 34569.727 29225.873  32748.52
+cvpred      34050.006 32340.15 26256.468 59657.56 33712.604 28845.604  32035.86
+MEDHHINC    26406.000 44444.00 17330.000 92341.00 32031.000 31920.000  11875.00
+CV residual -7644.006 12103.85 -8926.468 32683.44 -1681.604  3074.396 -20160.86
+                  583       585       588       595      611       616
+Predicted    9463.412  43579.81 20600.171 28012.318 34569.73 18761.053
+cvpred      10597.818  42430.60 20851.167 27675.354 33712.60 19157.935
+MEDHHINC    23534.000  27250.00 28214.000 37656.000 65125.00 16989.000
+CV residual 12936.182 -15180.60  7362.833  9980.646 31412.40 -2168.935
+                  620       622       623       624       625       633
+Predicted   37026.541 16418.735  21031.11 16587.948  25149.05  24894.78
+cvpred      36314.987 17108.197  21730.74 17257.669  25435.85  24953.37
+MEDHHINC    34500.000 20000.000   8500.00 23906.000  15208.00   9896.00
+CV residual -1814.987  2891.803 -13230.74  6648.331 -10227.85 -15057.37
+                  643       647       654      655       662      663       664
+Predicted    9310.934  35674.21  31090.20 32556.28  30206.14 19275.49 29656.377
+cvpred      10717.253  34781.28  31059.05 31858.87  29751.72 19631.57 29383.058
+MEDHHINC     8981.000  21750.00  17083.00 41111.00  16406.00 41563.00 21563.000
+CV residual -1736.253 -13031.28 -13976.05  9252.13 -13345.72 21931.43 -7820.058
+                  674       675      676       680       687       694
+Predicted   14388.211 18693.869 17948.90 27110.606  34776.37  24604.43
+cvpred      15930.716 19304.357 18562.14 27145.901  34252.51  24601.29
+MEDHHINC    11726.000 16858.000 15592.00 22700.000  10062.00   9375.00
+CV residual -4204.716 -2446.357 -2970.14 -4445.901 -24190.51 -15226.29
+                   706       712      713       715       720      724      726
+Predicted   16944.9388  34569.73 15532.09  27292.09 30504.301 26192.36 27988.93
+cvpred      17594.6638  33712.60 16361.88  27362.16 30301.544 25999.76 27739.13
+MEDHHINC    16827.0000  14917.00 32609.00   6907.00 22305.000 36591.00 38958.00
+CV residual  -767.6638 -18795.60 16247.12 -20455.16 -7996.544 10591.24 11218.87
+                  729       734      736      742       753       757       760
+Predicted   35084.483 30683.039 23807.52 14067.79 16930.112  34569.73  34860.32
+cvpred      34451.563 30298.803 23843.01 14836.96 17472.231  33712.60  34286.55
+MEDHHINC    41759.000 31917.000 29375.00 28875.00 19500.000  16250.00  17448.00
+CV residual  7307.437  1618.197  5531.99 14038.04  2027.769 -17462.60 -16838.55
+                  764       777       785      788       798       802
+Predicted    30062.36 28328.024  27598.56 18795.88  24289.28 33365.515
+cvpred       29695.10 27966.017  27382.09 19190.00  24389.60 32603.915
+MEDHHINC      9228.00 32188.000  15703.00 16071.00  13864.00 37955.000
+CV residual -20467.10  4221.983 -11679.09 -3119.00 -10525.60  5351.085
+                  804       810       816       822      827       832
+Predicted    54378.58 28108.254  33262.28 20427.447 20947.05  34369.83
+cvpred       53184.28 27872.757  32732.67 20733.832 21395.23  33867.95
+MEDHHINC     18750.00 18750.000  20652.00 12150.000 14145.00  14643.00
+CV residual -34434.28 -9122.757 -12080.67 -8583.832 -7250.23 -19224.95
+                  839       842       845       852       854       857
+Predicted   28943.781  24606.34  27875.78  29577.88 22387.956  48770.37
+cvpred      29121.079  24599.63  27730.49  29365.58 22621.279  47452.90
+MEDHHINC    19145.000  11466.00  15192.00   8939.00 19861.000  16944.00
+CV residual -9976.079 -13133.63 -12538.49 -20426.58 -2760.279 -30508.90
+                  883       887        890       893       895       901
+Predicted   36229.343 51088.158 30283.3131 35222.106  43634.15  26181.23
+cvpred      35419.378 49695.552 29912.9187 34399.424  42687.45  26113.65
+MEDHHINC    41250.000 41875.000 30875.0000 36111.000  23333.00  14224.00
+CV residual  5830.622 -7820.552   962.0813  1711.576 -19354.45 -11889.65
+                  902       910       913      927       936       941
+Predicted   28836.633 29209.394 32656.153 18144.19  27143.98  38469.06
+cvpred      28555.152 28996.129 32024.301 18590.00  27101.65  37571.01
+MEDHHINC    21375.000 23409.000 25903.000 29107.00  13832.00   8929.00
+CV residual -7180.152 -5587.129 -6121.301 10517.00 -13269.65 -28642.01
+                  942       943       949       953       960      970
+Predicted    39389.99  33081.60 27201.148  37634.51  32387.88 30090.11
+cvpred       38376.61  32601.56 27062.331  36953.29  31896.16 29704.20
+MEDHHINC     15385.00  15179.00 23750.000  12500.00  10795.00 40625.00
+CV residual -22991.61 -17422.56 -3312.331 -24453.29 -21101.16 10920.80
+                   972       973       978       980      987       988
+Predicted   18877.3361 28143.839 28675.198 27005.934 16719.16  30520.95
+cvpred      19264.9935 28186.508 28365.583 26833.642 17311.78  30334.40
+MEDHHINC    18472.0000 24010.000 26838.000 22500.000 31833.00  19444.00
+CV residual  -792.9935 -4176.508 -1527.583 -4333.642 14521.22 -10890.40
+                 1000      1002     1006     1010      1024     1025      1030
+Predicted    23221.19  59497.57 27896.22 34777.07 38865.027 46900.36 34729.423
+cvpred       23264.27  57832.36 27568.47 34035.60 37988.981 45726.68 34089.797
+MEDHHINC     12788.00 105320.00 45714.00 44067.00 40781.000 56500.00 39792.000
+CV residual -10476.27  47487.64 18145.53 10031.40  2792.019 10773.32  5702.203
+                1031      1034       1035     1036     1038     1043      1045
+Predicted   30248.29 31150.527 35478.8898 36339.79 33877.29 30065.86 37795.972
+cvpred      29815.67 30676.759 34841.4645 35706.02 33217.24 29706.07 36972.702
+MEDHHINC    46367.00 39417.000 34583.0000 59250.00 44881.00 47639.00 33523.000
+CV residual 16551.33  8740.241  -258.4645 23543.98 11663.76 17932.93 -3449.702
+                 1057      1059      1063     1064     1066      1071      1074
+Predicted   39989.594  55307.15  69408.81 36672.27 45497.97  53440.91 35966.448
+cvpred      39081.118  53777.77  67611.18 35813.10 44364.40  52090.50 35398.193
+MEDHHINC    46750.000 200001.00 119036.00 53472.00 75790.00 122786.00 42625.000
+CV residual  7668.882 146223.23  51424.82 17658.90 31425.60  70695.50  7226.807
+                1076     1077      1079     1083     1100     1108       1113
+Predicted   40401.96 38542.25  48399.38 38827.78 30509.84 26168.13 30358.2418
+cvpred      39407.59 37599.20  47093.94 38075.30 30146.67 26015.11 30041.4734
+MEDHHINC    55000.00 60625.00 102075.00 52500.00 31389.00 38438.00 30833.0000
+CV residual 15592.41 23025.80  54981.06 14424.70  1242.33 12422.89   791.5266
+                 1117      1119      1123      1134      1136      1145
+Predicted   32095.302 28083.750 24888.399  39769.56 22228.617 40974.648
+cvpred      31475.588 27945.391 24914.774  38743.88 22593.825 40215.541
+MEDHHINC    33846.000 18929.000 25213.000 101053.00 25114.000 38571.000
+CV residual  2370.412 -9016.391   298.226  62309.12  2520.175 -1644.541
+                 1150      1154      1158      1159     1160     1166     1167
+Predicted    25628.27 34778.592 29299.954 28926.822 32650.70 36365.19 37877.61
+cvpred       25637.55 33974.858 29031.914 28729.621 32130.88 35526.91 37009.24
+MEDHHINC     12422.00 36613.000 36685.000 31250.000 43438.00 61750.00 56923.00
+CV residual -13215.55  2638.142  7653.086  2520.379 11307.12 26223.09 19913.76
+                 1168      1169      1171     1175     1178     1180     1183
+Predicted   59313.275 40923.533 35527.082 60938.94 34431.16 47716.70 36888.87
+cvpred      57654.032 39953.976 34849.357 59323.78 33700.88 46458.96 35956.56
+MEDHHINC    63571.000 48750.000 40273.000 97653.00 61375.00 50774.00 59583.00
+CV residual  5916.968  8796.024  5423.643 38329.22 27674.12  4315.04 23626.44
+                 1190       1193      1196     1203      1204     1205     1214
+Predicted   62542.434 37663.9515 35514.160 31193.04 35913.812 33086.32 34782.40
+cvpred      60832.396 36805.0091 34738.452 30738.16 35013.117 32346.87 34054.32
+MEDHHINC    51522.000 36285.0000 42167.000 58125.00 37460.000 42862.00 57992.00
+CV residual -9310.396  -520.0091  7428.548 27386.84  2446.883 10515.13 23937.68
+                 1220      1224     1225     1251      1258      1262
+Predicted   30634.552 31350.522 31305.02 35329.85 43883.603 31621.380
+cvpred      30258.188 30786.355 30835.80 34568.64 42724.549 31036.353
+MEDHHINC    30756.000 36058.000 41063.00 38650.00 45481.000 28036.000
+CV residual   497.812  5271.645 10227.20  4081.36  2756.451 -3000.353
+                  1266      1273      1277      1283      1289      1292
+Predicted   43972.2684 31949.992 21700.306  30916.61 31957.688 33596.637
+cvpred      42810.3402 31481.283 22010.794  30472.65 31399.298 33058.759
+MEDHHINC    42083.0000 32273.000 28646.000  15833.00 33143.000 31108.000
+CV residual  -727.3402   791.717  6635.206 -14639.65  1743.702 -1950.759
+                 1308      1317      1321      1324      1328       1329
+Predicted   25700.161 29565.816 29889.013 21570.152 28436.876  -709.4406
+cvpred      25702.847 29105.622 29439.732 21803.086 28165.763  1231.9144
+MEDHHINC    33100.000 24788.000 25347.000 16140.000 32946.000 14792.0000
+CV residual  7397.153 -4317.622 -4092.732 -5663.086  4780.237 13560.0856
+                 1331      1340      1344      1352     1353      1355     1360
+Predicted    33504.57 32849.504  36188.11 30419.270 33068.68 32506.942 36611.26
+cvpred       32847.25 32265.018  35470.51 29971.172 32454.66 31963.321 35884.01
+MEDHHINC     17188.00 29955.000  16000.00 24476.000 23594.00 28250.000 28906.00
+CV residual -15659.25 -2310.018 -19470.51 -5495.172 -8860.66 -3713.321 -6978.01
+                1363      1364      1372      1376      1384      1385
+Predicted   32322.71 28964.455  30565.82 31129.014 31175.111  32045.62
+cvpred      31643.83 28756.235  30289.59 30573.193 30652.525  31779.50
+MEDHHINC    42250.00 21979.000  18125.00 34167.000 25455.000  16528.00
+CV residual 10606.17 -6777.235 -12164.59  3593.807 -5197.525 -15251.50
+                 1386       1394      1398      1399      1400      1411
+Predicted   26396.498 28521.5990 30943.859 27539.403  31617.25 26161.368
+cvpred      26344.838 28209.0847 30374.354 27330.621  31122.00 26030.203
+MEDHHINC    22161.000 28542.0000 21307.000 25909.000  20469.00 22500.000
+CV residual -4183.838   332.9153 -9067.354 -1421.621 -10653.00 -3530.203
+                 1420       1422      1459      1466      1468      1472
+Predicted   34856.852 39900.5243 35935.533 32250.809  40576.43 30752.863
+cvpred      34153.387 38895.1932 35112.839 31728.719  39524.59 30198.508
+MEDHHINC    40431.000 39875.0000 42750.000 41250.000  29091.00 39500.000
+CV residual  6277.613   979.8068  7637.161  9521.281 -10433.59  9301.492
+                1477     1482     1483     1485     1489      1492     1499
+Predicted   32512.02 31022.26 32333.82 31140.22 31274.98 35036.995 30299.73
+cvpred      31818.13 30475.79 31723.60 30555.14 30679.21 34276.513 29813.80
+MEDHHINC    46806.00 37500.00 44615.00 43365.00 31818.00 31435.000 39861.00
+CV residual 14987.87  7024.21 12891.40 12809.86  1138.79 -2841.513 10047.20
+                 1500      1501     1503      1508     1510     1516    1519
+Predicted   31087.452 35029.649 33395.05 32504.472 30077.57 31253.82 32126.6
+cvpred      30533.839 34197.944 32654.03 31811.173 29576.79 30659.73 31505.3
+MEDHHINC    35577.000 42500.000 30640.00 39545.000 43988.00 24907.00 42222.0
+CV residual  5043.161  8302.056 -2014.03  7733.827 14411.21 -5752.73 10716.7
+                 1522      1524      1535      1537      1538     1541
+Predicted   31579.838 32325.959 34924.958 32935.910 36516.046 29922.89
+cvpred      31008.752 31646.821 34145.853 32287.332 35595.829 29620.95
+MEDHHINC    36979.000 35568.000 28421.000 27000.000 33750.000 43266.00
+CV residual  5970.248  3921.179 -5724.853 -5287.332 -1845.829 13645.05
+                 1550      1560      1563      1567       1575      1578
+Predicted   32555.950 41202.967 31736.551  49500.68 31647.1951 34569.727
+cvpred      31898.127 40130.813 31280.939  48159.54 31081.3069 33712.604
+MEDHHINC    36111.000 36974.000 30278.000  27750.00 32019.0000 31587.000
+CV residual  4212.873 -3156.813 -1002.939 -20409.54   937.6931 -2125.604
+                 1586     1587      1600      1603      1619      1623     1625
+Predicted   32339.489 33491.54 40629.281 38692.683 37099.440  49216.96 45019.47
+cvpred      31686.004 32719.94 39672.911 37809.896 36388.219  47978.20 43863.02
+MEDHHINC    40375.000 44375.00 44444.000 33421.000 28750.000  36417.00 63750.00
+CV residual  8688.996 11655.06  4771.089 -4388.896 -7638.219 -11561.20 19886.98
+                 1626      1629     1633      1644      1647     1650      1651
+Predicted   43568.401 49566.767 37360.63 36215.311 32714.950 33865.41  74239.50
+cvpred      42484.307 48308.206 36568.99 35394.538 32032.166 33100.42  72144.38
+MEDHHINC    47446.000 38750.000 55500.00 41345.000 40019.000 56103.00  55714.00
+CV residual  4961.693 -9558.206 18931.01  5950.462  7986.834 23002.58 -16430.38
+                 1655      1657      1659      1663      1664      1665
+Predicted   57072.160  76156.71 32847.968 34684.188 33465.163 34015.360
+cvpred      55563.827  73951.45 32213.961 34002.604 32851.121 33309.225
+MEDHHINC    46944.000  43906.00 40707.000 32546.000 31773.000 36354.000
+CV residual -8619.827 -30045.45  8493.039 -1456.604 -1078.121  3044.775
+                1671      1674     1675      1679      1681      1682      1687
+Predicted   34569.73 40082.656 41210.05  55611.42 42492.969  74737.24 56707.944
+cvpred      33712.60 39121.889 40257.78  54168.02 41447.271  72578.00 55222.104
+MEDHHINC    45984.00 42660.000 50809.00  37787.00 43393.000  58750.00 46944.000
+CV residual 12271.40  3538.111 10551.22 -16381.02  1945.729 -13828.00 -8278.104
+                 1691      1696     1697     1700     1708     1710     1720
+Predicted   41725.925 33180.863 34569.73 38648.10 32516.22 34783.66 35447.28
+cvpred      40716.982 32460.036 33712.60 37658.77 31842.34 34053.67 34561.70
+MEDHHINC    45781.000 39861.000 49663.00 51406.00 56806.00 50750.00 87027.00
+CV residual  5064.018  7400.964 15950.40 13747.23 24963.66 16696.33 52465.30
+
+Sum of squares = 1.02654e+11    Mean square = 298412797    n = 344 
+
+fold 4 
+Observations in test set: 344 
+                   4         9        14       17        18        24        38
+Predicted   29732.41  29191.56 31906.377 29388.07 31506.478  34569.73 32846.844
+cvpred      29728.32  29188.67 31966.669 29401.45 31511.204  34554.98 32945.554
+MEDHHINC    49375.00  11923.00 30511.000 47346.00 35682.000  20717.00 35882.000
+CV residual 19646.68 -17265.67 -1455.669 17944.55  4170.796 -13837.98  2936.446
+                  40         46        51        52        53         56
+Predicted   33278.95 27835.9675 29281.961 24610.628  21862.06 30097.4148
+cvpred      33348.11 28033.2288 29368.422 24657.581  21875.31 30345.0249
+MEDHHINC    46964.00 28750.0000 26394.000 31563.000  10346.00 29375.0000
+CV residual 13615.89   716.7712 -2974.422  6905.419 -11529.31  -970.0249
+                     58       78       80        97        99       102
+Predicted   27319.60968 22782.38 18626.29 28202.182 31933.545 36133.821
+cvpred      27374.59536 22967.01 18722.49 28316.792 31994.517 36327.857
+MEDHHINC    27418.00000 25179.00 31467.00 26167.000 37500.000 33750.000
+CV residual    43.40464  2211.99 12744.51 -2149.792  5505.483 -2577.857
+                  105      106      119       134       135       138       157
+Predicted   19609.331 23612.48 31889.02 34887.436 31529.322 28713.652  28591.36
+cvpred      19865.501 23621.88 31925.58 35069.362 31576.338 28775.478  28826.32
+MEDHHINC    26000.000 42098.00 49444.00 30850.000 27736.000 19688.000  17378.00
+CV residual  6134.499 18476.12 17518.42 -4219.362 -3840.338 -9087.478 -11448.32
+                  163       170       173       174       179      198
+Predicted   33464.901 32228.934  19763.47  28391.37 32163.419 31350.68
+cvpred      33702.337 32439.066  19939.13  28518.89 32197.552 31372.31
+MEDHHINC    31713.000 23750.000   7183.00   7301.00 27625.000 54276.00
+CV residual -1989.337 -8689.066 -12756.13 -21217.89 -4572.552 22903.69
+                  201      212       215       216        218       222
+Predicted   29880.647 30024.94 31756.367 34569.727 31481.1039 29473.279
+cvpred      29876.231 30254.91 31894.076 34554.976 31628.0811 29499.723
+MEDHHINC    26184.000 20504.00 25893.000 38403.000 32240.0000 31453.000
+CV residual -3692.231 -9750.91 -6001.076  3848.024   611.9189  1953.277
+                  225      227      231       233        237        238
+Predicted   32594.249 33767.37 34992.74 32941.454 41100.5042 32555.6117
+cvpred      32700.612 33790.22 35028.36 32930.292 41555.5523 32632.1682
+MEDHHINC    26607.000 45197.00 45500.00 30455.000 40787.0000 31944.0000
+CV residual -6093.612 11406.78 10471.64 -2475.292  -768.5523  -688.1682
+                 243       251       257       258        261       262
+Predicted   32474.34 30877.274 35063.584 20884.824 28114.2310 37255.493
+cvpred      32563.78 30954.066 35421.276 21057.768 28234.3465 37652.499
+MEDHHINC    42917.00 35278.000 33824.000 24306.000 29219.0000 32708.000
+CV residual 10353.22  4323.934 -1597.276  3248.232   984.6535 -4944.499
+                  263        266       269      271      272       274
+Predicted    27920.72 29571.3753 27260.556 21762.38 26803.92  36426.96
+cvpred       27986.35 29599.2635 27385.707 21899.34 27210.02  36681.80
+MEDHHINC     15568.00 30378.0000 24609.000 35069.00 43750.00   8184.00
+CV residual -12418.35   778.7365 -2776.707 13169.66 16539.98 -28497.80
+                  283       287        290      304       305       310
+Predicted    29924.82 28243.575 21849.1058 29686.86 31308.684 25890.232
+cvpred       29995.01 28337.974 21921.5696 29740.90 31534.483 26043.545
+MEDHHINC     16373.00 35739.000 21250.0000 44183.00 27232.000 30625.000
+CV residual -13622.01  7401.026  -671.5696 14442.10 -4302.483  4581.455
+                 311       312       313      315       323       335       337
+Predicted   20443.52  41430.12 15766.284 18289.65  28220.73 25050.740 27124.139
+cvpred      20531.18  41721.21 15792.974 18353.12  28219.97 25176.819 27297.232
+MEDHHINC    30875.00  22386.00 25417.000 27083.00  12019.00 30662.000 25556.000
+CV residual 10343.82 -19335.21  9624.026  8729.88 -16200.97  5485.181 -1741.232
+                  339       347       349      356       371       373
+Predicted    30343.74 28528.992 29630.129 28559.36 28385.069 27575.655
+cvpred       30436.30 28576.488 29665.784 28589.40 28675.012 27654.683
+MEDHHINC     19482.00 26944.000 28529.000 30163.00 21111.000 21731.000
+CV residual -10954.30 -1632.488 -1136.784  1573.60 -7564.012 -5923.683
+                  374       381        387       396       397       398
+Predicted   25134.671 27573.776 19275.4944  35041.80  36165.74  32914.74
+cvpred      25207.153 27574.444 19294.4506  35213.19  36222.14  32903.64
+MEDHHINC    19777.000 25581.000 19167.0000   8523.00  17115.00  19167.00
+CV residual -5430.153 -1993.444  -127.4506 -26690.19 -19107.14 -13736.64
+                  400       406       412       413      417       424
+Predicted    31501.99 22574.983 16069.455 31458.016 19825.58 27050.159
+cvpred       31494.00 22586.668 16157.085 31738.439 19843.32 27205.172
+MEDHHINC     10428.00 27250.000 17377.000 29958.000 18317.00 29563.000
+CV residual -21066.00  4663.332  1219.915 -1780.439 -1526.32  2357.828
+                  425       428       437       442      447        451
+Predicted   20421.846  31224.89 33959.692 40907.011 28499.66 27120.7697
+cvpred      20438.275  31314.95 34045.986 41174.786 28579.32 27344.7024
+MEDHHINC    11344.000  11705.00 41500.000 39886.000 35417.00 26750.0000
+CV residual -9094.275 -19609.95  7454.014 -1288.786  6837.68  -594.7024
+                  454      455       464       466       475       477
+Predicted   28384.121 29782.59  28259.48 16775.380 22361.065 21429.319
+cvpred      28436.748 29778.39  28405.86 16799.846 22594.339 21443.528
+MEDHHINC    24718.000 34792.00  16250.00 14792.000 17847.000 14750.000
+CV residual -3718.748  5013.61 -12155.86 -2007.846 -4747.339 -6693.528
+                  482       487       499        520      524       525
+Predicted   19351.368  26979.28  29196.06 23317.0596 27383.09 34572.793
+cvpred      19488.115  27364.77  29193.15 23327.1086 27384.18 34694.693
+MEDHHINC    22000.000  17250.00   5400.00 23289.0000 29960.00 37768.000
+CV residual  2511.885 -10114.77 -23793.15   -38.1086  2575.82  3073.307
+                  530       534      544      547      552        556      562
+Predicted    29137.67 31002.394 33827.22 32962.10 29792.89 48185.9904 31845.66
+cvpred       29174.28 31076.082 33894.28 33124.49 29788.67 48778.2738 31836.91
+MEDHHINC     16985.00 38125.000 45909.00 53750.00 41125.00 48333.0000 49188.00
+CV residual -12189.28  7048.918 12014.72 20625.51 11336.33  -445.2738 17351.09
+                  565      568       571       579       590      593      594
+Predicted    34569.73 20194.85  34569.73  36849.74 25023.604 29327.32 31335.71
+cvpred       34554.98 20787.88  34554.98  37002.63 25029.892 29324.12 31328.09
+MEDHHINC     16667.00 34500.00  15870.00  24821.00 26250.000 45524.00 49438.00
+CV residual -17887.98 13712.12 -18684.98 -12181.63  1220.108 16199.88 18109.91
+                  600       602      605      608       615      619      626
+Predicted    36222.99 29554.611 30813.16 32765.81  33954.15 14601.60 15645.07
+cvpred       36665.63 29860.042 30806.69 32838.88  34177.43 14705.89 15840.54
+MEDHHINC     12440.00 37375.000 42083.00 46023.00  16016.00 29176.00 17457.00
+CV residual -24225.63  7514.958 11276.31 13184.12 -18161.43 14470.11  1616.46
+                  636       638       644       649        651       656
+Predicted   15814.463 22598.670  31625.52  42184.69 31201.4337 27695.672
+cvpred      16269.982 22634.273  31617.25  42868.05 31298.5904 27812.496
+MEDHHINC     8036.000 15313.000  14345.00  11172.00 32083.0000 30255.000
+CV residual -8233.982 -7321.273 -17272.25 -31696.05   784.4096  2442.504
+                  658      661      669      685       690       704      707
+Predicted   34958.306 28512.99 34569.73 23046.61  25509.55 21741.790 22933.91
+cvpred      35026.014 28706.07 34554.98 23057.25  25697.35 21949.695 23109.78
+MEDHHINC    41379.000 23173.00 50714.00 61429.00  11371.00 13490.000 35568.00
+CV residual  6352.986 -5533.07 16159.02 38371.75 -14326.35 -8459.695 12458.22
+                 709       710       716       725       727       730
+Predicted   23162.46  34569.73 22477.961 43279.453 31204.935 23214.846
+cvpred      23305.73  34554.98 22620.703 43652.996 31281.938 23282.629
+MEDHHINC    15833.00  14135.00 17813.000 50329.000 34464.000 21394.000
+CV residual -7472.73 -20419.98 -4807.703  6676.004  3182.062 -1888.629
+                  731       733       737      738       745       746
+Predicted   18357.047  28568.08 30274.220 29110.03  21518.19  30076.63
+cvpred      18418.573  28566.56 30343.105 29164.76  21713.50  30219.96
+MEDHHINC    24438.000  15679.00 35294.000 35898.00   9476.00  18036.00
+CV residual  6019.427 -12887.56  4950.895  6733.24 -12237.50 -12183.96
+                  747       752       754       759       765       768
+Predicted    31370.94  19732.89  28848.14  29781.04  32801.99  35572.08
+cvpred       31615.81  19750.83  28846.00  30248.09  33109.78  35671.54
+MEDHHINC     18542.00   8466.00  15139.00  10125.00   7330.00   9688.00
+CV residual -13073.81 -11284.83 -13707.00 -20123.09 -25779.78 -25983.54
+                  769       772       775       778       779        780
+Predicted   -12212.23  30497.06  20956.14 16381.966  32871.30 16611.1374
+cvpred      -12060.57  30669.31  20971.39 16407.299  32860.29 16741.9127
+MEDHHINC      8333.00   8274.00   8125.00 22212.000  19792.00 16167.0000
+CV residual  20393.57 -22395.31 -12846.39  5804.701 -13068.29  -574.9127
+                  784       790       799       808       813       818
+Predicted    26794.59 28447.254  23962.46 32889.495  31501.16 26755.936
+cvpred       26927.72 28684.716  24030.76 32958.722  31643.59 26871.326
+MEDHHINC     16490.00 20893.000  13306.00 25208.000  21172.00 18713.000
+CV residual -10437.72 -7791.716 -10724.76 -7750.722 -10471.59 -8158.326
+                  823       826       830       844       848      851
+Predicted   34876.258 15172.875  30286.41 25215.072  25762.01 24601.67
+cvpred      34940.066 15257.732  30568.81 25367.318  25909.57 24761.59
+MEDHHINC    32679.000 10417.000  16173.00 18802.000   9464.00 16893.00
+CV residual -2261.066 -4840.732 -14395.81 -6565.318 -16445.57 -7868.59
+                  856       861       863       864       868        869
+Predicted    32969.27 30355.912  26567.55  37763.28 27843.730 29081.1665
+cvpred       33400.46 30427.624  26570.44  37890.90 27843.803 29157.7644
+MEDHHINC     14375.00 38191.000   8438.00  21964.00 31167.000 28182.0000
+CV residual -19025.46  7763.376 -18132.44 -15926.90  3323.197  -975.7644
+                  877       879        880       881       886       891
+Predicted    39323.68 32285.272 33382.1217 31180.545 36846.040  32813.96
+cvpred       39691.64 32429.589 33418.3061 31173.263 37119.664  33027.14
+MEDHHINC     26331.00 25761.000 34000.0000 26467.000 31875.000  22206.00
+CV residual -13360.64 -6668.589   581.6939 -4706.263 -5244.664 -10821.14
+                  892       894       904       906       908       914
+Predicted    37122.03 36940.204  32513.60 32264.578  38178.73  32600.55
+cvpred       37221.06 37118.631  32547.16 32547.874  38324.88  32661.37
+MEDHHINC     20000.00 36932.000  21328.00 27656.000  26750.00  19667.00
+CV residual -17221.06  -186.631 -11219.16 -4891.874 -11574.88 -12994.37
+                  915        918       919       924       929       932
+Predicted   34136.492 29895.3424 40636.482  30315.30  32704.72 26325.997
+cvpred      34251.273 30018.6656 41044.115  30470.51  33173.97 26329.415
+MEDHHINC    25083.000 30625.0000 31625.000  17260.00  20605.00 26563.000
+CV residual -9168.273   606.3344 -9419.115 -13210.51 -12568.97   233.585
+                  947        955      956       975      977       990
+Predicted   33546.680 27786.2985 29640.65 26426.625 24755.59  9854.268
+cvpred      33773.555 27925.4146 29706.65 26454.427 24844.33  9893.987
+MEDHHINC    29007.000 27417.0000 21429.00 17292.000 22563.00 14750.000
+CV residual -4766.555  -508.4146 -8277.65 -9162.427 -2281.33  4856.013
+                  991       993       997      1001     1007     1011      1013
+Predicted    25688.81 26356.956 26766.580  36239.78 28672.42 32839.68 32654.419
+cvpred       25934.75 26360.306 26920.885  36452.99 28775.66 32924.78 32656.908
+MEDHHINC     11797.00 35461.000 30417.000  18984.00 41042.00 49868.00 35350.000
+CV residual -14137.75  9100.694  3496.115 -17468.99 12266.34 16943.22  2693.092
+                1021      1023      1028      1029      1048     1049     1050
+Predicted   34569.73 40441.432 34604.821 38254.594 38611.421 35459.87 39641.23
+cvpred      34554.98 40688.451 34674.887 38404.121 38882.444 35641.24 39852.57
+MEDHHINC    70833.00 43056.000 42286.000 36793.000 44583.000 46914.00 51250.00
+CV residual 36278.02  2367.549  7611.113 -1611.121  5700.556 11272.76 11397.43
+                 1056      1069      1080     1082     1086     1090
+Predicted   57637.568 49312.642  68025.80 38903.26 22803.02 32658.28
+cvpred      58651.217 50090.692  69588.97 39228.58 22958.63 32740.35
+MEDHHINC    50714.000 49625.000 142973.00 52045.00 49750.00 44583.00
+CV residual -7937.217  -465.692  73384.03 12816.42 26791.37 11842.65
+                   1093      1094       1102      1104      1107      1109
+Predicted   29048.06633 34643.415 26397.5549  37192.00 34867.207 26609.871
+cvpred      29329.04587 34946.432 26514.9116  37604.43 34951.187 26686.053
+MEDHHINC    29279.00000 40833.000 25761.0000  23594.00 31583.000 34511.000
+CV residual   -50.04587  5886.568  -753.9116 -14010.43 -3368.187  7824.947
+                 1121      1127      1131      1132     1135      1137
+Predicted    30319.13  31768.76  30032.14 24854.317 24844.44 38758.308
+cvpred       30313.74  31979.08  30198.66 25035.273 25002.63 39097.691
+MEDHHINC     16364.00  18500.00  15353.00 26250.000 36750.00 29583.000
+CV residual -13949.74 -13479.08 -14845.66  1214.727 11747.37 -9514.691
+                  1142      1149     1156      1157     1165     1172     1173
+Predicted   28932.0334 32643.081 22726.47 32460.585 45167.72 39953.91 32182.48
+cvpred      28929.7075 32958.567 22737.82 32554.433 45835.39 40179.19 32295.59
+MEDHHINC    28375.0000 25050.000 24063.00 28060.000 58750.00 75798.00 48438.00
+CV residual  -554.7075 -7908.567  1325.18 -4494.433 12914.61 35618.81 16142.41
+                 1174      1182      1186     1188      1189      1192
+Predicted   42379.233 34415.157 28323.952 32918.67 34316.256 39026.046
+cvpred      42791.388 34463.761 28381.484 32940.51 34425.545 39311.941
+MEDHHINC    51719.000 37574.000 26058.000 44375.00 43393.000 45250.000
+CV residual  8927.612  3110.239 -2323.484 11434.49  8967.455  5938.059
+                 1198      1199     1210     1216      1221      1222     1228
+Predicted   35984.666 36224.622 31671.27 32240.76 37425.385 31410.727 30996.45
+cvpred      36032.995 36415.838 31740.52 32231.14 37537.944 31478.002 31052.94
+MEDHHINC    44028.000 42297.000 47813.00 43808.00 40417.000 34708.000 51898.00
+CV residual  7995.005  5881.162 16072.48 11576.86  2879.056  3229.998 20845.06
+                 1229      1236      1245      1247     1253      1260
+Predicted   34569.727 30950.637 44937.383  50698.40 36588.55 36831.991
+cvpred      34554.976 31047.093 45574.912  51542.77 36663.81 36918.096
+MEDHHINC    31823.000 33421.000 47946.000  39306.00 56442.00 35000.000
+CV residual -2731.976  2373.907  2371.088 -12236.77 19778.19 -1918.096
+                 1263      1265      1272      1290      1300       1302
+Predicted   31356.082 32328.784 31943.438 29733.188 32766.277 30694.1393
+cvpred      31491.189 32457.105 32012.998 29856.437 32899.947 30769.4276
+MEDHHINC    34128.000 27614.000 25272.000 22181.000 31705.000 31750.0000
+CV residual  2636.811 -4843.105 -6740.998 -7675.437 -1194.947   980.5724
+                 1313      1330      1345      1348      1350        1351
+Predicted   31354.800 30183.420 36572.926  32839.20  44337.87 27693.78574
+cvpred      31516.921 30552.867 36826.937  33052.16  44873.68 27780.18524
+MEDHHINC    28352.000 27656.000 29500.000  18618.00  17321.00 27826.00000
+CV residual -3164.921 -2896.867 -7326.937 -14434.16 -27552.68    45.81476
+                 1354      1369      1371      1373     1375      1377
+Predicted   35049.530 34960.939 33017.526 33110.692 38668.44  33485.15
+cvpred      35267.704 35056.967 33197.207 33292.178 38836.41  33846.44
+MEDHHINC    26393.000 41316.000 37125.000 28824.000 73438.00  22813.00
+CV residual -8874.704  6259.033  3927.793 -4468.178 34601.59 -11033.44
+                 1380      1390      1410      1414     1421      1425
+Predicted    28651.03 29009.478 29232.829 38769.142 35566.68  37507.52
+cvpred       28919.12 29131.624 29460.917 39227.181 35631.56  37623.74
+MEDHHINC     15500.00 27361.000 25392.000 35457.000 47105.00  15208.00
+CV residual -13419.12 -1770.624 -4068.917 -3770.181 11473.44 -22415.74
+                 1439      1440      1444      1454      1457      1464
+Predicted   32977.150 34712.261 37267.140 52573.079 41292.837  60953.19
+cvpred      33095.134 34789.071 37555.759 53360.946 41687.447  62114.65
+MEDHHINC    35200.000 35990.000 30943.000 58500.000 32262.000  45179.00
+CV residual  2104.866  1200.929 -6612.759  5139.054 -9425.447 -16935.65
+                 1469      1471     1473      1474     1475      1479      1481
+Predicted   37791.150 34818.651 31184.85 32140.576 34325.93 32880.799 34569.727
+cvpred      37920.015 35013.791 31177.56 32208.196 34411.10 33003.131 34554.976
+MEDHHINC    42109.000 37500.000 34087.00 39412.000 43019.00 27019.000 37656.000
+CV residual  4188.985  2486.209  2909.44  7203.804  8607.90 -5984.131  3101.024
+                 1487     1488      1491      1493      1498      1504     1505
+Predicted   31312.057 34538.55 34486.947 37034.754 32263.168 30449.267 34912.97
+cvpred      31304.486 34727.61 34524.068 37129.898 32253.501 30443.597 35037.41
+MEDHHINC    36912.000 46250.00 40385.000 30625.000 37574.000 35313.000 45313.00
+CV residual  5607.514 11522.39  5860.932 -6504.898  5320.499  4869.403 10275.59
+                1507      1523      1528      1540      1542      1543     1546
+Predicted   29558.14 33602.013  42924.82 32906.779  38220.30 30953.864 30819.32
+cvpred      29554.43 33589.395  43376.45 33030.623  38649.32 31097.428 30889.93
+MEDHHINC    53125.00 31830.000  31579.00 29943.000  24205.00 27045.000 41528.00
+CV residual 23570.57 -1759.395 -11797.45 -3087.623 -14444.32 -4052.428 10638.07
+                 1552     1559      1568      1584      1594      1596
+Predicted   36431.200 30536.04 32436.042 33987.287 44934.339  45746.45
+cvpred      36745.196 30576.25 32675.595 34081.054 45486.114  46331.25
+MEDHHINC    33421.000 44471.00 25781.000 42258.000 39911.000  36136.00
+CV residual -3324.196 13894.75 -6894.595  8176.946 -5575.114 -10195.25
+                 1597      1601      1606      1610      1618      1624
+Predicted   45214.929 35102.977 41724.110 41836.766 34237.497 36869.120
+cvpred      45674.757 35250.046 42244.125 42287.577 34239.491 37220.642
+MEDHHINC    55417.000 36528.000 40647.000 48103.000 28896.000 31622.000
+CV residual  9742.243  1277.954 -1597.125  5815.423 -5343.491 -5598.642
+                 1628      1640     1646      1656     1661      1666      1669
+Predicted    63826.35 78118.358 36292.71 55274.027 30591.67 45493.540  54160.28
+cvpred       65115.91 80045.073 36412.22 56232.368 30705.03 46074.419  55148.12
+MEDHHINC     34667.00 78825.000 52353.00 49500.000 22208.00 52019.000  41518.00
+CV residual -30448.91 -1220.073 15940.78 -6732.368 -8497.03  5944.581 -13630.12
+                1670     1672      1673      1678      1685      1686     1694
+Predicted   33752.56 29313.53 33906.027 39131.871 31529.358 33134.084 30356.60
+cvpred      33799.53 29310.36 33942.805 39410.824 31534.596 33203.994 30455.45
+MEDHHINC    51920.00 43672.00 43289.000 34464.000 27778.000 29202.000 51328.00
+CV residual 18120.47 14361.64  9346.195 -4946.824 -3756.596 -4001.994 20872.55
+                 1695     1701     1703       1717
+Predicted    77061.91 53243.21 33203.17 42725.6186
+cvpred       78941.53 54119.61 33284.20 43226.1692
+MEDHHINC     52500.00 70982.00 45694.00 42329.0000
+CV residual -26441.53 16862.39 12409.80  -897.1692
+
+Sum of squares = 51517802468    Mean square = 149761054    n = 344 
+
+fold 5 
+Observations in test set: 344 
+                   1         5        7        8      12        16        22
+Predicted   31256.05  28491.12 27976.73 28805.08 26202.5 28844.383 28072.098
+cvpred      31368.95  28570.02 28006.41 28897.89 26130.6 28925.805 28125.545
+MEDHHINC    49107.00   9432.00 47143.00 31981.00 45556.0 37765.000 19129.000
+CV residual 17738.05 -19138.02 19136.59  3083.11 19425.4  8839.195 -8996.545
+                   23       26       29         33       34       55       65
+Predicted   26994.006 35188.05 30211.18 37324.6134 26708.05 31648.74 32518.99
+cvpred      26998.805 35548.45 30340.72 37745.3931 26707.97 31832.00 32733.90
+MEDHHINC    25729.000 52070.00 41133.00 37578.0000 38382.00 45250.00 51705.00
+CV residual -1269.805 16521.55 10792.28  -167.3931 11674.03 13418.00 18971.10
+                  66        73        76        77        79        93
+Predicted   23436.95  33805.43  26918.29 28434.701 26899.399 14060.865
+cvpred      23257.96  34036.38  26831.62 28412.088 26858.115 13479.128
+MEDHHINC    44911.00  23289.00  16696.00 25777.000 21550.000 22132.000
+CV residual 21653.04 -10747.38 -10135.62 -2635.088 -5308.115  8652.872
+                    95       101       104       111       112       113
+Predicted   28662.3649 36012.166 13894.085 23458.686 36643.469 28910.011
+cvpred      28672.5018 36351.827 13326.335 23264.337 37046.301 28967.212
+MEDHHINC    29412.0000 28269.000 21420.000 16277.000 45433.000 35000.000
+CV residual   739.4982 -8082.827  8093.665 -6987.337  8386.699  6032.788
+                   118       121       122       125       139       143
+Predicted   26511.8130 24057.266  30341.24 31976.970  35567.09  29057.24
+cvpred      26503.0331 23895.261  30403.43 32153.586  35811.41  29045.89
+MEDHHINC    25625.0000 28583.000  16310.00 24875.000  19327.00  15875.00
+CV residual  -878.0331  4687.739 -14093.43 -7278.586 -16484.41 -13170.89
+                  146       147       151       162       168       169
+Predicted    30070.66 24648.700 21291.867 29962.276 22837.122 22302.422
+cvpred       30110.46 24540.822 21018.927 30078.905 22640.656 22040.433
+MEDHHINC     18125.00 18750.000 19773.000 24848.000 19702.000 24722.000
+CV residual -11985.46 -5790.822 -1245.927 -5230.905 -2938.656  2681.567
+                  172       176        177       178      181       182
+Predicted   12111.355 34271.375 32214.3578 26278.186 27795.93 25551.794
+cvpred      11430.887 34569.818 32458.2028 26259.056 27794.54 25471.262
+MEDHHINC     6822.000 36705.000 31786.0000 22404.000 26071.00 23150.000
+CV residual -4608.887  2135.182  -672.2028 -3855.056 -1723.54 -2321.262
+                  183       187       192       194       196       199
+Predicted   32037.269 35549.793  31018.25 33123.562 31578.290 33815.592
+cvpred      32260.705 35884.296  31148.89 33376.187 31755.648 34096.149
+MEDHHINC    27361.000 42692.000  20427.00 31296.000 33594.000 36201.000
+CV residual -4899.705  6807.704 -10721.89 -2080.187  1838.352  2104.851
+                  204       207       210       213       220       224
+Predicted   32603.170 33285.101 31050.467 30494.916 29541.865  45082.96
+cvpred      32845.326 33560.328 31184.933 30599.413 29655.188  45543.06
+MEDHHINC    37786.000 29219.000 27025.000 23800.000 36087.000  35114.00
+CV residual  4940.674 -4341.328 -4159.933 -6799.413  6431.812 -10429.06
+                  230      235       254       264       268       278
+Predicted   38410.385 29076.07  32794.98 28216.314  27380.00 28266.813
+cvpred      38852.749 29081.69  32991.02 28231.783  27362.62 28251.684
+MEDHHINC    33350.000 40577.00  12750.00 24722.000  16688.00 21250.000
+CV residual -5502.749 11495.31 -20241.02 -3509.783 -10674.62 -7001.684
+                    279         285        289        301       303       316
+Predicted   30506.38059 28902.37822 24532.8185 28722.1925 27139.844 23866.330
+cvpred      30658.33233 28969.59981 24436.3685 28737.9472 27121.346 23698.612
+MEDHHINC    30625.00000 28902.00000 24875.0000 29472.0000 28375.000 21591.000
+CV residual   -33.33233   -67.59981   438.6315   734.0528  1253.654 -2107.612
+                  317       329       330       336       340       342
+Predicted   -4889.322 28723.598 32977.698 32492.020 33232.674 35329.524
+cvpred      -6289.184 28802.619 33247.795 32688.034 33457.379 35685.256
+MEDHHINC    46250.000 26181.000 29013.000 30547.000 25052.000 26339.000
+CV residual 52539.184 -2621.619 -4234.795 -2141.034 -8405.379 -9346.256
+                  345       346       350        354       375       377
+Predicted   29633.102 28670.681 30495.018 26745.3775 27477.615 22729.091
+cvpred      29718.092 28720.018 30662.696 26746.9447 27498.875 22552.735
+MEDHHINC    22530.000 26597.000 25912.000 27381.0000 25811.000 17422.000
+CV residual -7188.092 -2123.018 -4750.696   634.0553 -1687.875 -5130.735
+                  379       380       386       388       389       393
+Predicted    40062.34 17682.924 28837.534  29268.04  30466.62  29017.49
+cvpred       40555.26 17283.021 28931.784  29362.17  30604.53  29097.54
+MEDHHINC     19342.00 10568.000 22059.000  18372.00  15000.00  18750.00
+CV residual -21213.26 -6715.021 -6872.784 -10990.17 -15604.53 -10347.54
+                  394       401       402       416       429       430
+Predicted    36565.69 26212.934 30335.662  29790.06 21537.612 27374.859
+cvpred       36966.47 26164.857 30461.316  29876.25 21308.474 27311.927
+MEDHHINC      6830.00 30282.000 27500.000  17083.00 30188.000 24509.000
+CV residual -30136.47  4117.143 -2961.316 -12793.25  8879.526 -2802.927
+                  433       438       439       443       457       458
+Predicted   29787.726 34569.727 31957.574 28536.060  30472.46  29820.98
+cvpred      29784.557 34917.916 32190.044 28616.955  30540.65  29937.57
+MEDHHINC    19891.000 40515.000 37679.000 29922.000  15667.00  16058.00
+CV residual -9893.557  5597.084  5488.956  1305.045 -14873.65 -13879.57
+                 461       462       470       479       481      484      485
+Predicted   29957.36 33836.504 32145.290 13405.360  34113.65 22975.73 20605.78
+cvpred      30029.22 34074.448 32360.584 12815.959  34344.90 22736.55 20248.02
+MEDHHINC    31458.00 24583.000 28750.000 17250.000  13875.00 14821.00 22292.00
+CV residual  1428.78 -9491.448 -3610.584  4434.041 -20469.90 -7915.55  2043.98
+                  488       489       490       502        503       504
+Predicted    24243.51 24870.982 23868.126 27039.858 22763.5753 17231.649
+cvpred       24081.59 24761.863 23714.639 27002.899 22557.9576 16811.754
+MEDHHINC      8967.00 25333.000 14300.000 29327.000 22200.0000  9596.000
+CV residual -15114.59   571.137 -9414.639  2324.101  -357.9576 -7215.754
+                   509       511       529        535       536       550
+Predicted   25486.5217  29576.36 30720.968 33724.0647 29215.827 33573.361
+cvpred      25408.6326  29703.35 30898.655 33953.2438 29293.446 33778.237
+MEDHHINC    24970.0000  16477.00 26875.000 33661.0000 34583.000 27340.000
+CV residual  -438.6326 -13226.35 -4023.655  -292.2438  5289.554 -6438.237
+                  554       559       561      563       567      578       584
+Predicted   29673.763 31000.695  30333.42 25978.64 31046.251 19801.75  29500.34
+cvpred      29797.072 31185.118  30493.94 25930.57 31229.614 19468.52  29623.95
+MEDHHINC    26843.000 32976.000  12043.00 36917.00 37833.000 45625.00   7321.00
+CV residual -2954.072  1790.882 -18450.94 10986.43  6603.386 26156.48 -22302.95
+                 597       598       599       606       613       614      617
+Predicted   32051.92 29219.834  32310.52 30792.311 29682.015 34569.727 27239.57
+cvpred      32270.04 29304.333  32440.63 30973.158 29791.831 34917.916 27162.52
+MEDHHINC    55536.00 37708.000  21000.00 37188.000 36176.000 41691.000 53274.00
+CV residual 23265.96  8403.667 -11440.63  6214.842  6384.169  6773.084 26111.48
+                  630       631       637       640       642       646
+Predicted   21116.848  40082.20  22957.35 22642.893  8099.340  2504.537
+cvpred      20716.219  40575.64  22763.68 22462.719  7112.023  1432.226
+MEDHHINC    14286.000   8750.00  11574.00 18438.000 14408.000 23438.000
+CV residual -6430.219 -31825.64 -11189.68 -4024.719  7295.977 22005.774
+                  652      657       660        665       667       670
+Predicted   23981.433 23839.71 23361.075 33604.9131  33763.48 34969.716
+cvpred      23835.838 23663.50 23176.477 33737.0931  34001.51 35317.012
+MEDHHINC    32292.000 49306.00 27250.000 32784.0000  12188.00 37500.000
+CV residual  8456.162 25642.50  4073.523  -953.0931 -21813.51  2182.988
+                  672       679       686       688        691       695
+Predicted   37131.432  24591.42  39408.46  28475.03 20019.0527  34222.49
+cvpred      37547.121  24446.20  39884.15  28445.72 19664.7362  34472.14
+MEDHHINC    27946.000  13158.00   9643.00  12731.00 19102.0000  21250.00
+CV residual -9601.121 -11288.20 -30241.15 -15714.72  -562.7362 -13222.14
+                 699       700       721       739      741       749       755
+Predicted   21525.11  19292.85 29164.711 28517.103 31428.20  31003.03 24739.308
+cvpred      21260.68  18964.26 29208.313 28557.827 31604.19  31193.21 24421.043
+MEDHHINC    32550.00   8438.00 33854.000 26375.000 29000.00  15313.00 15625.000
+CV residual 11289.32 -10526.26  4645.687 -2182.827 -2604.19 -15880.21 -8796.043
+                  767       771       773       786       787       789
+Predicted    31632.52 26455.513 26491.941 20672.798  29062.36 21696.703
+cvpred       31797.55 26444.239 26444.494 20350.108  29166.57 21431.581
+MEDHHINC     11250.00 18750.000 22143.000 17917.000  13958.00 16500.000
+CV residual -20547.55 -7694.239 -4301.494 -2433.108 -15208.57 -4931.581
+                  792       794       801      803       806       807
+Predicted    32980.12  30305.57 31070.562 27196.57 30345.697 31225.984
+cvpred       33179.71  30413.47 31201.335 27189.44 30484.654 31426.044
+MEDHHINC     22885.00  19783.00 21914.000 41563.00 22431.000 34000.000
+CV residual -10294.71 -10630.47 -9287.335 14373.56 -8053.654  2573.956
+                  809       811       812       819       834       836
+Predicted    28854.37  30135.71  28932.03 28962.695  31332.73  31313.77
+cvpred       28894.40  30198.23  29030.47 29022.287  31409.81  31363.16
+MEDHHINC      9833.00  17375.00  18947.00 30208.000   9787.00  11250.00
+CV residual -19061.40 -12823.23 -10083.47  1185.713 -21622.81 -20113.16
+                  850      860       866      870       873      876       898
+Predicted    30606.13 32851.34  25082.58 32891.53 28491.644 28483.49 28073.173
+cvpred       30655.96 32888.89  24977.50 33095.85 28540.573 28514.06 28116.965
+MEDHHINC     20208.00 23750.00  14970.00 29474.00 24514.000 18571.00 21979.000
+CV residual -10447.96 -9138.89 -10007.50 -3621.85 -4026.573 -9943.06 -6137.965
+                  905        909      912       922       933       937
+Predicted   27090.071 32732.3144 18071.84 31889.228  32583.58  34182.25
+cvpred      27039.088 32974.2886 17689.17 32118.669  32761.50  34473.00
+MEDHHINC    26591.000 33929.0000 30357.00 40625.000  13929.00  16000.00
+CV residual  -448.088   954.7114 12667.83  8506.331 -18832.50 -18473.00
+                  938       950       962       969       971       979
+Predicted    33036.35  34484.73  31984.78 24800.088 24647.348 28651.521
+cvpred       33223.87  34764.96  31949.74 24715.478 24466.521 28715.816
+MEDHHINC     14643.00  24000.00   2499.00 19773.000 29792.000 25833.000
+CV residual -18580.87 -10764.96 -29450.74 -4942.478  5325.479 -2882.816
+                   981       983       984       996       998     1003
+Predicted   20067.9597  32019.28 24345.278 27165.252 27282.540 49542.39
+cvpred      19736.6668  32204.23 24219.598 27154.678 27265.825 50267.79
+MEDHHINC    18750.0000  13388.00 20417.000 31806.000 23711.000 82152.00
+CV residual  -986.6668 -18816.23 -3802.598  4651.322 -3554.825 31884.21
+                 1008      1009      1014       1016     1018      1019
+Predicted    8741.996 35036.482 33676.602 34569.7269 33214.34 33131.934
+cvpred       7946.007 35345.522 33932.308 34917.9157 33474.87 33352.017
+MEDHHINC    32750.000 40379.000 38315.000 35250.0000 43056.00 31510.000
+CV residual 24803.993  5033.478  4382.692   332.0843  9581.13 -1842.017
+                1022      1027     1037      1039     1042      1053      1060
+Predicted   22086.32 34879.985 31795.66 30694.125 28976.78 51697.690 42864.696
+cvpred      21881.49 35180.328 32020.96 30855.143 29066.09 52435.366 43431.456
+MEDHHINC    43375.00 32386.000 51779.00 29219.000 51932.00 58393.000 37438.000
+CV residual 21493.51 -2794.328 19758.04 -1636.143 22865.91  5957.634 -5993.456
+                1070     1075      1081      1087      1092      1096     1103
+Predicted   42893.03 32921.69 42147.819  49979.24 49411.987  34138.19 30323.01
+cvpred      43399.64 33136.05 42619.728  50733.46 50082.671  34383.07 30468.75
+MEDHHINC    72143.00 48636.00 50556.000  37333.00 59712.000  22059.00 32336.00
+CV residual 28743.36 15499.95  7936.272 -13400.46  9629.329 -12324.07  1867.25
+                 1111       1112      1115      1125      1130      1140
+Predicted   27251.422 32594.0820 28276.513 26788.810 21565.177 31533.747
+cvpred      27177.261 32806.3832 28293.445 26725.201 21279.139 31665.768
+MEDHHINC    21371.000 32500.0000 25882.000 29464.000 22768.000 23628.000
+CV residual -5806.261  -306.3832 -2411.445  2738.799  1488.861 -8037.768
+                 1141      1144     1146      1151      1152     1162      1179
+Predicted   25833.633  34569.73 33612.60 27054.007 26822.962 38596.44 36390.139
+cvpred      25744.143  34917.92 33901.32 27004.973 26827.966 39042.15 36760.239
+MEDHHINC    27188.000  21382.00 59167.00 31806.000 24914.000 59821.00 38063.000
+CV residual  1443.857 -13535.92 25265.68  4801.027 -1913.966 20778.85  1302.761
+                 1181     1184     1185      1197     1201     1202      1219
+Predicted   36538.691 33388.86 32797.80 32844.054 32597.78 37284.16 28428.199
+cvpred      36938.762 33684.73 33050.46 33096.976 32837.48 37703.87 28488.837
+MEDHHINC    32917.000 50573.00 51923.00 42396.000 44779.00 45256.00 32083.000
+CV residual -4021.762 16888.27 18872.54  9299.024 11941.52  7552.13  3594.163
+                  1241      1252      1255      1264      1267      1269
+Predicted   35178.1616 37082.651 29155.986 31713.800 35605.116 32647.823
+cvpred      35436.1661 37450.371 29264.344 31906.705 35879.566 32772.607
+MEDHHINC    35078.0000 34125.000 36042.000 37500.000 33250.000 30744.000
+CV residual  -358.1661 -3325.371  6777.656  5593.295 -2629.566 -2028.607
+                 1270      1288      1294      1299      1301      1303
+Predicted   33909.089 32387.254 32164.852 24412.754 30414.846 30529.177
+cvpred      34144.089 32576.447 32391.404 24233.628 30561.043 30684.123
+MEDHHINC    35714.000 35357.000 25224.000 20250.000 35156.000 24432.000
+CV residual  1569.911  2780.553 -7167.404 -3983.628  4594.957 -6252.123
+                 1304       1314     1322     1325      1326      1327
+Predicted    34992.72   421.5113 20363.97 19438.34 31211.190 35071.502
+cvpred       35235.09  -765.1151 20065.38 19116.20 31382.361 35367.811
+MEDHHINC     18229.00 26250.0000 30139.00 35208.00 26850.000 31071.000
+CV residual -17006.09 27015.1151 10073.62 16091.80 -4532.361 -4296.811
+                 1334      1339      1346      1347      1349      1356
+Predicted    38474.23 38035.975  34548.78 34312.708  33185.46 33519.101
+cvpred       38867.35 38378.971  34781.92 34587.959  33342.04 33788.039
+MEDHHINC     21286.00 28795.000  22604.00 31875.000  20163.00 29698.000
+CV residual -17581.35 -9583.971 -12177.92 -2712.959 -13179.04 -4090.039
+                 1357      1358     1361     1362      1366     1370     1374
+Predicted   31991.427  34130.09 33882.82 39706.24 38169.854 37882.56 32259.82
+cvpred      32204.105  34362.23 34185.95 40189.78 38568.089 38260.58 32474.86
+MEDHHINC    29464.000  24130.00 36544.00 45481.00 33750.000 40741.00 43194.00
+CV residual -2740.105 -10232.23  2358.05  5291.22 -4818.089  2480.42 10719.14
+                  1378      1379      1383      1387      1389     1392
+Predicted   30021.5865  28193.03  31924.51 32532.657 37593.918 34884.05
+cvpred      30137.8907  28093.76  32004.21 32719.009 38021.794 35205.87
+MEDHHINC    29583.0000  17321.00  19688.00 28144.000 34318.000 31731.00
+CV residual  -554.8907 -10772.76 -12316.21 -4575.009 -3703.794 -3474.87
+                 1393      1395      1413     1418     1423      1426      1435
+Predicted   32695.717 32539.336 27674.885 25787.40 32333.66 28732.174 33513.219
+cvpred      32909.432 32743.354 27692.698 25746.53 32545.06 28821.757 33784.026
+MEDHHINC    31830.000 24583.000 21728.000 37188.00 45238.00 30250.000 37250.000
+CV residual -1079.432 -8160.354 -5964.698 11441.47 12692.94  1428.243  3465.974
+                 1437       1438      1448     1449      1452      1453
+Predicted   36007.779 40081.7765 34569.727 35339.21 33377.469 38051.487
+cvpred      36317.324 40518.3741 34917.916 35578.23 33636.039 38419.999
+MEDHHINC    34348.000 41154.0000 33889.000 50625.00 36034.000 44375.000
+CV residual -1969.324   635.6259 -1028.916 15046.77  2397.961  5955.001
+                1456     1460      1462     1463      1476      1484      1490
+Predicted   38289.96 32121.98 38708.953 36560.08 29084.903 34569.727 32914.863
+cvpred      38736.17 32361.73 39121.213 36905.28 29172.805 34917.916 33162.355
+MEDHHINC    61136.00 44766.00 45556.000 58125.00 35273.000 30909.000 29236.000
+CV residual 22399.83 12404.27  6434.787 21219.72  6100.195 -4008.916 -3926.355
+                 1496     1502      1506       1509     1514        1515
+Predicted   33815.921 31838.98 33389.234 34569.7269 34262.86 32955.49767
+cvpred      34059.236 32066.20 33685.126 34917.9157 34569.11 33232.17545
+MEDHHINC    32917.000 47422.00 40238.000 34583.0000 46429.00 33281.00000
+CV residual -1142.236 15355.80  6552.874  -334.9157 11859.89    48.82455
+                 1517      1532     1534      1536      1544      1547
+Predicted   32389.250 33104.676 31632.44 31589.714  34203.78 31772.033
+cvpred      32640.843 33351.433 31850.51 31794.585  34413.84 31974.218
+MEDHHINC    26623.000 36742.000 34408.00 35556.000  20192.00 30250.000
+CV residual -6017.843  3390.567  2557.49  3761.415 -14221.84 -1724.218
+                   1548      1549      1551     1553       1555      1556
+Predicted   31910.54422  34264.04  40530.32 23320.18 31297.7069 28769.936
+cvpred      32060.37174  34525.48  41035.56 23149.80 31337.9704 28861.192
+MEDHHINC    32115.00000  23036.00  27708.00 41528.00 30417.0000 31607.000
+CV residual    54.62826 -11489.48 -13327.56 18378.20  -920.9704  2745.808
+                 1557      1562      1564      1569      1570     1582     1583
+Predicted   32965.332 32624.769  34132.36 33456.984 34175.918 32055.13 37134.04
+cvpred      33209.505 32832.075  34407.63 33641.924 34468.243 32240.52 37516.25
+MEDHHINC    36100.000 31793.000  23667.00 34722.000 39276.000 29643.00 35714.00
+CV residual  2890.495 -1039.075 -10740.63  1080.076  4807.757 -2597.52 -1802.25
+                 1589     1593      1599      1611      1612      1617
+Predicted   29352.280 33425.45 31496.562  35005.32 36096.304 32678.890
+cvpred      29450.498 33695.37 31708.608  35325.11 36415.413 32933.028
+MEDHHINC    35577.000 24077.00 32964.000  23151.00 31875.000 30721.000
+CV residual  6126.502 -9618.37  1255.392 -12174.11 -4540.413 -2212.028
+                 1632      1634      1635      1638      1641      1642
+Predicted   39710.336 35878.681 35105.499 51482.743 76624.458 33898.883
+cvpred      40101.824 36230.889 35435.284 52252.564 78073.248 34185.118
+MEDHHINC    36406.000 40208.000 44196.000 49295.000 86214.000 30307.000
+CV residual -3695.824  3977.111  8760.716 -2957.564  8140.752 -3878.118
+                 1643     1653      1654      1658      1660      1677
+Predicted    35231.68 33483.36 31930.087 42605.410 34951.102 35452.767
+cvpred       35554.02 33783.42 32149.158 43155.036 35263.443 35789.037
+MEDHHINC     23571.00 46384.00 35396.000 41736.000 39722.000 28342.000
+CV residual -11983.02 12600.58  3246.842 -1419.036  4458.557 -7447.037
+                  1684      1692     1698      1704     1706
+Predicted   32282.9859 46966.781 33690.58 37025.128 33262.59
+cvpred      32522.6551 47628.098 33999.83 37422.855 33552.87
+MEDHHINC    32283.0000 38214.000 56034.00 46724.000 67656.00
+CV residual  -239.6551 -9414.098 22034.17  9301.145 34103.13
+
+Sum of squares = 43685373847    Mean square = 126992366    n = 344 
+
+Overall (Sum over all 344 folds) 
+       ms 
+187055918 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">attr</span>(cv, <span class="st">"ms"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(mse)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>rmse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 13676.84</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
