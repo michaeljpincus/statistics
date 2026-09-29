@@ -303,42 +303,42 @@
   {
     "objectID": "weekly-notes/Lecture8.html",
     "href": "weekly-notes/Lecture8.html",
-    "title": "Lecture8",
+    "title": "Lecture 8",
     "section": "",
     "text": "The \\(F\\) statistic in the regression output tests the \\(H_0\\) that none of the predictors do anything to predict the independent variable.\nIf \\(p&lt;0.05\\), we reject \\(H_0\\) that at least one of the predictors is doing something to account for the variance in dependent variable \\(y\\)."
   },
   {
     "objectID": "weekly-notes/Lecture8.html#review-from-last-week",
     "href": "weekly-notes/Lecture8.html#review-from-last-week",
-    "title": "Lecture8",
+    "title": "Lecture 8",
     "section": "",
     "text": "The \\(F\\) statistic in the regression output tests the \\(H_0\\) that none of the predictors do anything to predict the independent variable.\nIf \\(p&lt;0.05\\), we reject \\(H_0\\) that at least one of the predictors is doing something to account for the variance in dependent variable \\(y\\)."
   },
   {
     "objectID": "weekly-notes/Lecture8.html#log-transformations",
     "href": "weekly-notes/Lecture8.html#log-transformations",
-    "title": "Lecture8",
+    "title": "Lecture 8",
     "section": "Log Transformations",
     "text": "Log Transformations\nSometimes it is possible to make a variable normal by subjecting it to some simple algebraic operations.\n\nThis sometimes helps when we deal with issues of non normality of residuals or non linear relationship between x and y.\n\nThe logarithmic transformation of variable \\(x\\) is problematic when we have zero values. In that case, \\(\\text{ln}(x+1)\\) may help.\n\nThe logarithmic transformation is the most widely used to achieve normality when the variable is positively skewed (tail on the right).\nAnalysis is then performed on the transformed variables.\n\n\nDependent variable only\nInterpretation of the coefficient: as predictor \\(x\\) goes up by 1 unit, the expected change in our dependent variable \\(y\\) is \\((e^{\\beta_1} -1) * 100\\%\\)\nWhen \\(\\beta_1\\) is small, we can say that as x goes up by 1 unit, expected change in our dependent variable \\(y\\) is approximately \\(100 * \\beta_1\\%\\).\n\n\nIndependent variable only\nA 1% increase in the independent variable is associated with a change in the dependent variable by \\(\\frac{\\beta_1}{100}\\) units.\n\n\nBoth dependent and independent variable\nAs \\(x\\) changes by 1%, \\(y\\) changes by \\((1.01^{\\beta_1}-1)*100\\%\\).\nWhen \\(\\beta_1\\) is small, we can use the approximation \\(\\beta_1\\%\\).\n\n\nWhen \\(\\text{log}\\) transformations aren’t helpful\nThere are a few situations where this is the case:\n\nWhen you have a huge spike at 0, it won’t solve the non-normality issue.\nWhen there’s a long tail on the left (a negatively-skewed distribution)\n\nYou could technically transpose the data to shift it, but the interpretation of the \\(\\beta\\) coefficients are very complicated to interpret. If we’re sticking to the simplistic method of OLS regression, we might as well keep the output simplistic as well."
   },
   {
     "objectID": "weekly-notes/Lecture8.html#residual-plots-and-polynomial-regression",
     "href": "weekly-notes/Lecture8.html#residual-plots-and-polynomial-regression",
-    "title": "Lecture8",
+    "title": "Lecture 8",
     "section": "Residual plots and polynomial regression",
     "text": "Residual plots and polynomial regression\nThe residuals \\(\\epsilon_1,\\dots,\\epsilon_n\\) are a great method to check regression assumptions.\nIn a residual plot, you are looking for outliers, curvature, or changing variance.\n\nPolynomial regression\nTo account for curvature, we can run a polynomial regression to fit a polynomial instead of a line.\nThe quadratic model is:\n\\[\ny=\\beta_0+\\beta_1x+\\beta_2x^2 + \\epsilon\n\\]\nThe cubic model is:\n\\[\ny=\\beta_0+\\beta_1x+\\beta_2x^2+\\beta_3x^3+\\epsilon\n\\]\nThe higher the order of the polynomial, the more curvature it can account for. However, it’s best not to use a polynomial that is of higher order than 3. We should choose the lowest order polynomial possible.\n\n\n\\(p\\)-values for selecting order\nThe regression output provides a more formal method for selecting the order of the polynomial. This method typically agrees with looking at the residual plot.\nLook at the \\(p\\)-value for the highest order term (cubic or quadratic) in the regression output (e.g., fit the cubic model to start. If the cubic term is significant, use the cubic model. If the quadratic term is not significant, remove it and rerun the model assuming a linear regression).\n\n\nWhat if the polynomial model doesn’t work?\nWe can try other methods, such as centering the variable or combining the polynomial regression with \\(\\text{log}\\) transformations."
   },
   {
     "objectID": "weekly-notes/Lecture8.html#approaches-to-regression-analysis",
     "href": "weekly-notes/Lecture8.html#approaches-to-regression-analysis",
-    "title": "Lecture8",
+    "title": "Lecture 8",
     "section": "2 approaches to regression analysis",
     "text": "2 approaches to regression analysis\n\nTheory-driven, traditional statistical approach\n\nFormulate a theory that the dependent variable is a function of one or more predictors.\nTest that theory by using the simple/multiple regression methods we described earlier, focusing more on the significance and effect size of each predictor than on the overall predictive ability of the model (e.g., \\(R^2\\))\n\nStatistical learning/data-mining paradigm focusing on model’s predictive ability\n\nWith this framework, we care care more about how well the overall model firs the data and focus less on the contribution of each individual predictor.\nGoal is to optimize quantities like \\(R^2\\) and RMSE, and not just for the data set at hand: we also want to assess the quality of prediction for unseen data.\n\n\n\nTraining and validation datasets\nImagine we have a dataset with 1000 observations and are trying to fit the models using this data set. But it’s only one dataset!\nSo, we randomly split the dataset in half. 500 as training, 500 as hold-outs to predict. We use this dataset to “train” the regression models.\nFor the first model, we then take the \\(\\beta\\) coefficients that were estimated with the training dataset and compute the predicted value \\(\\hat{y_i}\\) and the residual \\(\\epsilon\\) for each observation \\(i\\) in the validation dataset. We then repeat this for the second model.\nWe then use the validation dataset to calculate a statistic known as the Root Mean Square Error for both models.\n\n\nRoot Mean Square Error (RMSE)\nWe get the RMSE by dividing the \\(\\text{SSE}\\) by the number of observations \\(n\\) to first get the Mean Square Error (MSE). We then take the square root to get our RMSE:\n\\[\n\\text{RMSE}=\\sqrt{\\frac{\\sum_{i=1}^n(y_i-\\hat{y}_i)^2}{n}} = \\sqrt{\\frac{\\sum_{i=1}^n\\epsilon_i^2}{n}}\n\\]\nRMSE is an estimate of the magnitude of a typical residual.\n\n\nProblems with RMSE\nThe RMSE will depend on the observations that end up being in the training and validation data sets.\n\nIf we repeat the process of randomly splitting the sample set into two parts, we will get a somewhat different estimate for the RMSE each time, and that may affect the selection of the best model.\n\nOnly part of the observations (those which are included in the training dataset) are used for model fitting and parameter estimation. This is especially problematic if our initial dataset is already small\n\n\nPotential solutions\nLeave One Out Cross Validation\n\nHolds out one observation from the dataset, estimate its \\(\\hat{y}\\) and \\(\\epsilon\\) from the model, and then does the same thing for every single value from the dataset. The RMSE is then calculated.\n\n\\(k\\)-fold Cross Validation\n\nQuicker than LOOCV if you have a large sample size \\(n\\).\nInvolves randomly dividing the set of observations into \\(k\\) groups or “folds” of approximately equal size.\nThe 1st fold is treated as a validation dataset and the model is fitted on the remaining \\(k-1\\) folds.\nLike with LOOCV, we then calculate the RMSE.\n\n\n\nOverfitting\nEven though a complicated model may do very well with modeling training data, the same model will likely be abysmal at modeling unseen data."
   },
   {
     "objectID": "weekly-notes/Lecture8.html#practice-in-r",
     "href": "weekly-notes/Lecture8.html#practice-in-r",
-    "title": "Lecture8",
+    "title": "Lecture 8",
     "section": "Practice in R",
     "text": "Practice in R\n\nlibrary(DAAG)\nmultregdata &lt;- read.csv('RegressionData.csv')\n\n\nlibrary(DAAG)\nlibrary(ggplot2)\n\nfit &lt;- lm(MEDHHINC ~ PCTVACANT + PCTSINGLES, data = multregdata)\n\ncv &lt;- CVlm(data = multregdata, fit, m = 5, plotit = FALSE, printit = FALSE)\n\ncv_rmse &lt;- sqrt(mean((cv$MEDHHINC - cv$cvpred)^2))\ncv_mae  &lt;- mean(abs(cv$MEDHHINC - cv$cvpred))\ncat(\"CV RMSE:\", round(cv_rmse), \"\\nCV MAE: \", round(cv_mae), \"\\n\")\n\nCV RMSE: 13677 \nCV MAE:  9540 \n\n\n\nmse &lt;- attr(cv, \"ms\")\nrmse &lt;- sqrt(mse)\nrmse\n\n[1] 13676.84\n\n\n\nggplot(cv, aes(x = cvpred, y = MEDHHINC, color = factor(fold))) +\n  geom_point(alpha = 0.4) +\n  geom_abline(slope = 1, intercept = 0, color = \"red\", linetype = \"dashed\") +\n  facet_wrap(~ fold) +\n  scale_color_brewer(palette = \"Set1\", name = \"Fold\") +\n  labs(x = \"Cross-validated predicted median household income\", y = \"Actual median household income\") +\n  theme_minimal()"
   }

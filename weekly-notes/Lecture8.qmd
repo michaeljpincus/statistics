@@ -1,5 +1,5 @@
 ---
-title: "Lecture8"
+title: "Lecture 8"
 description: "Log Transformations, Polynomial Regression, Cross-Validation"
 date: 09-26-2026
 editor: visual
