@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-09-24">
-<meta name="description" content="Regression Diagnostics and Log Transformations">
+<meta name="dcterms.date" content="2026-09-26">
+<meta name="description" content="Log Transformations, Polynomial Regression, Cross-Validation">
 
-<title>Lecture 7 – Geospatial Statistics Portfolio</title>
+<title>Lecture8 – Geospatial Statistics Portfolio</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -185,27 +185,29 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#regression-diagnostics" id="toc-regression-diagnostics" class="nav-link active" data-scroll-target="#regression-diagnostics">Regression Diagnostics</a>
+  <li><a href="#review-from-last-week" id="toc-review-from-last-week" class="nav-link active" data-scroll-target="#review-from-last-week">Review from last week</a></li>
+  <li><a href="#log-transformations" id="toc-log-transformations" class="nav-link" data-scroll-target="#log-transformations">Log Transformations</a>
   <ul class="collapse">
-  <li><a href="#two-or-more-categorical-variables-in-a-regression" id="toc-two-or-more-categorical-variables-in-a-regression" class="nav-link" data-scroll-target="#two-or-more-categorical-variables-in-a-regression">Two or more categorical variables in a regression</a></li>
+  <li><a href="#dependent-variable-only" id="toc-dependent-variable-only" class="nav-link" data-scroll-target="#dependent-variable-only">Dependent variable only</a></li>
+  <li><a href="#independent-variable-only" id="toc-independent-variable-only" class="nav-link" data-scroll-target="#independent-variable-only">Independent variable only</a></li>
+  <li><a href="#both-dependent-and-independent-variable" id="toc-both-dependent-and-independent-variable" class="nav-link" data-scroll-target="#both-dependent-and-independent-variable">Both dependent and independent variable</a></li>
+  <li><a href="#when-textlog-transformations-arent-helpful" id="toc-when-textlog-transformations-arent-helpful" class="nav-link" data-scroll-target="#when-textlog-transformations-arent-helpful">When <span class="math inline">\(\text{log}\)</span> transformations aren’t helpful</a></li>
   </ul></li>
-  <li><a href="#regression-assumptions" id="toc-regression-assumptions" class="nav-link" data-scroll-target="#regression-assumptions">Regression Assumptions</a>
+  <li><a href="#residual-plots-and-polynomial-regression" id="toc-residual-plots-and-polynomial-regression" class="nav-link" data-scroll-target="#residual-plots-and-polynomial-regression">Residual plots and polynomial regression</a>
   <ul class="collapse">
-  <li><a href="#calculating-the-variance-inflation-factor" id="toc-calculating-the-variance-inflation-factor" class="nav-link" data-scroll-target="#calculating-the-variance-inflation-factor">Calculating the Variance Inflation Factor</a></li>
+  <li><a href="#polynomial-regression" id="toc-polynomial-regression" class="nav-link" data-scroll-target="#polynomial-regression">Polynomial regression</a></li>
+  <li><a href="#p-values-for-selecting-order" id="toc-p-values-for-selecting-order" class="nav-link" data-scroll-target="#p-values-for-selecting-order"><span class="math inline">\(p\)</span>-values for selecting order</a></li>
+  <li><a href="#what-if-the-polynomial-model-doesnt-work" id="toc-what-if-the-polynomial-model-doesnt-work" class="nav-link" data-scroll-target="#what-if-the-polynomial-model-doesnt-work">What if the polynomial model doesn’t work?</a></li>
   </ul></li>
-  <li><a href="#example-in-r" id="toc-example-in-r" class="nav-link" data-scroll-target="#example-in-r">Example in R</a>
+  <li><a href="#approaches-to-regression-analysis" id="toc-approaches-to-regression-analysis" class="nav-link" data-scroll-target="#approaches-to-regression-analysis">2 approaches to regression analysis</a>
   <ul class="collapse">
-  <li><a href="#checking-linearity" id="toc-checking-linearity" class="nav-link" data-scroll-target="#checking-linearity">Checking Linearity</a></li>
-  <li><a href="#checking-multicolinearity" id="toc-checking-multicolinearity" class="nav-link" data-scroll-target="#checking-multicolinearity">Checking multicolinearity</a></li>
-  <li><a href="#running-the-regression" id="toc-running-the-regression" class="nav-link" data-scroll-target="#running-the-regression">Running the regression</a></li>
-  <li><a href="#variance-inflation-factor" id="toc-variance-inflation-factor" class="nav-link" data-scroll-target="#variance-inflation-factor">Variance Inflation Factor</a></li>
-  <li><a href="#checking-the-normality-of-residuals" id="toc-checking-the-normality-of-residuals" class="nav-link" data-scroll-target="#checking-the-normality-of-residuals">Checking the normality of residuals</a></li>
-  <li><a href="#checking-for-heteroskedasticity" id="toc-checking-for-heteroskedasticity" class="nav-link" data-scroll-target="#checking-for-heteroskedasticity">Checking for heteroskedasticity</a></li>
+  <li><a href="#training-and-validation-datasets" id="toc-training-and-validation-datasets" class="nav-link" data-scroll-target="#training-and-validation-datasets">Training and validation datasets</a></li>
+  <li><a href="#root-mean-square-error-rmse" id="toc-root-mean-square-error-rmse" class="nav-link" data-scroll-target="#root-mean-square-error-rmse">Root Mean Square Error (RMSE)</a></li>
+  <li><a href="#problems-with-rmse" id="toc-problems-with-rmse" class="nav-link" data-scroll-target="#problems-with-rmse">Problems with RMSE</a></li>
+  <li><a href="#potential-solutions" id="toc-potential-solutions" class="nav-link" data-scroll-target="#potential-solutions">Potential solutions</a></li>
+  <li><a href="#overfitting" id="toc-overfitting" class="nav-link" data-scroll-target="#overfitting">Overfitting</a></li>
   </ul></li>
-  <li><a href="#a-review-of-logarithms" id="toc-a-review-of-logarithms" class="nav-link" data-scroll-target="#a-review-of-logarithms">A review of logarithms</a>
-  <ul class="collapse">
-  <li><a href="#textlog-transformations" id="toc-textlog-transformations" class="nav-link" data-scroll-target="#textlog-transformations"><span class="math inline">\(\text{log}\)</span> transformations</a></li>
-  </ul></li>
+  <li><a href="#practice-in-r" id="toc-practice-in-r" class="nav-link" data-scroll-target="#practice-in-r">Practice in R</a></li>
   </ul>
 </nav>
     </div>
@@ -214,12 +216,12 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Lecture 7</h1>
+<h1 class="title">Lecture8</h1>
 </div>
 
 <div>
   <div class="description">
-    Regression Diagnostics and Log Transformations
+    Log Transformations, Polynomial Regression, Cross-Validation
   </div>
 </div>
 
@@ -230,7 +232,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 24, 2026</p>
+      <p class="date">September 26, 2026</p>
     </div>
   </div>
   
@@ -242,240 +244,177 @@ window.Quarto = {
 </header>
 
 
-<section id="regression-diagnostics" class="level2">
-<h2 class="anchored" data-anchor-id="regression-diagnostics">Regression Diagnostics</h2>
+<section id="review-from-last-week" class="level2">
+<h2 class="anchored" data-anchor-id="review-from-last-week">Review from last week</h2>
+<p>The <span class="math inline">\(F\)</span> statistic in the regression output tests the <span class="math inline">\(H_0\)</span> that none of the predictors do anything to predict the independent variable.</p>
+<p>If <span class="math inline">\(p&lt;0.05\)</span>, we reject <span class="math inline">\(H_0\)</span> that at least one of the predictors is doing something to account for the variance in dependent variable <span class="math inline">\(y\)</span>.</p>
+</section>
+<section id="log-transformations" class="level2">
+<h2 class="anchored" data-anchor-id="log-transformations">Log Transformations</h2>
+<p>Sometimes it is possible to make a variable normal by subjecting it to some simple algebraic operations.</p>
+<ul>
+<li><p>This sometimes helps when we deal with issues of non normality of residuals or non linear relationship between x and y.</p>
+<ul>
+<li>The logarithmic transformation of variable <span class="math inline">\(x\)</span> is problematic when we have zero values. In that case, <span class="math inline">\(\text{ln}(x+1)\)</span> may help.</li>
+</ul></li>
+<li><p>The logarithmic transformation is the most widely used to achieve normality when the variable is positively skewed (tail on the right).</p></li>
+<li><p>Analysis is then performed on the <em>transformed</em> variables.</p></li>
+</ul>
+<section id="dependent-variable-only" class="level3">
+<h3 class="anchored" data-anchor-id="dependent-variable-only">Dependent variable only</h3>
+<p>Interpretation of the coefficient: as predictor <span class="math inline">\(x\)</span> goes up by 1 unit, the expected change in our dependent variable <span class="math inline">\(y\)</span> is <span class="math inline">\((e^{\beta_1} -1) * 100\%\)</span></p>
+<p>When <span class="math inline">\(\beta_1\)</span> is small, we can say that as x goes up by 1 unit, expected change in our dependent variable <span class="math inline">\(y\)</span> is approximately <span class="math inline">\(100 * \beta_1\%\)</span>.</p>
+</section>
+<section id="independent-variable-only" class="level3">
+<h3 class="anchored" data-anchor-id="independent-variable-only">Independent variable only</h3>
+<p>A 1% increase in the independent variable is associated with a change in the dependent variable by <span class="math inline">\(\frac{\beta_1}{100}\)</span> units.</p>
+</section>
+<section id="both-dependent-and-independent-variable" class="level3">
+<h3 class="anchored" data-anchor-id="both-dependent-and-independent-variable">Both dependent and independent variable</h3>
+<p>As <span class="math inline">\(x\)</span> changes by 1%, <span class="math inline">\(y\)</span> changes by <span class="math inline">\((1.01^{\beta_1}-1)*100\%\)</span>.</p>
+<p>When <span class="math inline">\(\beta_1\)</span> is small, we can use the approximation <span class="math inline">\(\beta_1\%\)</span>.</p>
+</section>
+<section id="when-textlog-transformations-arent-helpful" class="level3">
+<h3 class="anchored" data-anchor-id="when-textlog-transformations-arent-helpful">When <span class="math inline">\(\text{log}\)</span> transformations aren’t helpful</h3>
+<p>There are a few situations where this is the case:</p>
+<ul>
+<li><p>When you have a huge spike at 0, it won’t solve the non-normality issue.</p></li>
+<li><p>When there’s a long tail on the left (a negatively-skewed distribution)</p></li>
+</ul>
+<p>You could technically transpose the data to shift it, but the interpretation of the <span class="math inline">\(\beta\)</span> coefficients are very complicated to interpret. If we’re sticking to the simplistic method of OLS regression, we might as well keep the output simplistic as well.</p>
+</section>
+</section>
+<section id="residual-plots-and-polynomial-regression" class="level2">
+<h2 class="anchored" data-anchor-id="residual-plots-and-polynomial-regression">Residual plots and polynomial regression</h2>
+<p>The residuals <span class="math inline">\(\epsilon_1,\dots,\epsilon_n\)</span> are a great method to check regression assumptions.</p>
+<p>In a residual plot, you are looking for outliers, curvature, or changing variance.</p>
+<section id="polynomial-regression" class="level3">
+<h3 class="anchored" data-anchor-id="polynomial-regression">Polynomial regression</h3>
+<p>To account for curvature, we can run a polynomial regression to fit a polynomial instead of a line.</p>
+<p>The quadratic model is:</p>
+<p><span class="math display">\[
+y=\beta_0+\beta_1x+\beta_2x^2 + \epsilon
+\]</span></p>
+<p>The cubic model is:</p>
+<p><span class="math display">\[
+y=\beta_0+\beta_1x+\beta_2x^2+\beta_3x^3+\epsilon
+\]</span></p>
+<p>The higher the order of the polynomial, the more curvature it can account for. However, it’s best not to use a polynomial that is of higher order than 3. We should choose the <strong>lowest</strong> order polynomial possible.</p>
+</section>
+<section id="p-values-for-selecting-order" class="level3">
+<h3 class="anchored" data-anchor-id="p-values-for-selecting-order"><span class="math inline">\(p\)</span>-values for selecting order</h3>
+<p>The regression output provides a more formal method for selecting the order of the polynomial. This method typically agrees with looking at the residual plot.</p>
+<p>Look at the <span class="math inline">\(p\)</span>-value for the highest order term (cubic or quadratic) in the regression output (e.g., fit the cubic model to start. If the cubic term is significant, use the cubic model. If the quadratic term is not significant, remove it and rerun the model assuming a linear regression).</p>
+</section>
+<section id="what-if-the-polynomial-model-doesnt-work" class="level3">
+<h3 class="anchored" data-anchor-id="what-if-the-polynomial-model-doesnt-work">What if the polynomial model doesn’t work?</h3>
+<p>We can try other methods, such as centering the variable or combining the polynomial regression with <span class="math inline">\(\text{log}\)</span> transformations.</p>
+</section>
+</section>
+<section id="approaches-to-regression-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="approaches-to-regression-analysis">2 approaches to regression analysis</h2>
 <ol type="1">
-<li>First, we look at the <span class="math inline">\(F\)</span> statistic and the associated <span class="math inline">\(p\)</span>-value. The <span class="math inline">\(F\)</span> statistic is an omnibus test, which tests <span class="math inline">\(H_0\)</span> that none of the independent variables in the model is a significant predictor of the dependent variable.</li>
-<li>Next, look at the <span class="math inline">\(p\)</span>-value associated with each independent variable.</li>
-<li>If the predictor is significant, we look at the sign and value of the <span class="math inline">\(\hat{\beta}\)</span> for that predictor. The sign of <span class="math inline">\(\hat{\beta}\)</span> tells us if it’s a direct or inverse relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</li>
+<li><p>Theory-driven, <em>traditional</em> statistical approach</p>
+<ul>
+<li>Formulate a theory that the dependent variable is a function of one or more predictors.</li>
+<li>Test that theory by using the simple/multiple regression methods we described earlier, focusing more on the significance and effect size of each predictor than on the overall predictive ability of the model (e.g., <span class="math inline">\(R^2\)</span>)</li>
+</ul></li>
+<li><p>Statistical learning/data-mining paradigm focusing on model’s predictive ability</p>
+<ul>
+<li><p>With this framework, we care care more about how well the overall model firs the data and focus less on the contribution of each individual predictor.</p></li>
+<li><p>Goal is to optimize quantities like <span class="math inline">\(R^2\)</span> and RMSE, and not just for the data set at hand: we also want to assess the quality of prediction for unseen data.</p></li>
+</ul></li>
 </ol>
-<section id="two-or-more-categorical-variables-in-a-regression" class="level3">
-<h3 class="anchored" data-anchor-id="two-or-more-categorical-variables-in-a-regression">Two or more categorical variables in a regression</h3>
-<p>Imagine we want to predict median house value using these predictors:</p>
+<section id="training-and-validation-datasets" class="level3">
+<h3 class="anchored" data-anchor-id="training-and-validation-datasets">Training and validation datasets</h3>
+<p>Imagine we have a dataset with 1000 observations and are trying to fit the models using this data set. But it’s only one dataset!</p>
+<p>So, we randomly split the dataset in half. 500 as training, 500 as hold-outs to predict. We use this dataset to “train” the regression models.</p>
+<p>For the first model, we then take the <span class="math inline">\(\beta\)</span> coefficients that were estimated with the training dataset and compute the predicted value <span class="math inline">\(\hat{y_i}\)</span> and the residual <span class="math inline">\(\epsilon\)</span> for each observation <span class="math inline">\(i\)</span> in the validation dataset. <strong>We then repeat this for the second model.</strong></p>
+<p>We then use the validation dataset to calculate a statistic known as the <strong>Root Mean Square Error</strong> for both models.</p>
+</section>
+<section id="root-mean-square-error-rmse" class="level3">
+<h3 class="anchored" data-anchor-id="root-mean-square-error-rmse">Root Mean Square Error (RMSE)</h3>
+<p>We get the RMSE by dividing the <span class="math inline">\(\text{SSE}\)</span> by the number of observations <span class="math inline">\(n\)</span> to first get the Mean Square Error (MSE). We then take the square root to get our RMSE:</p>
+<p><span class="math display">\[
+\text{RMSE}=\sqrt{\frac{\sum_{i=1}^n(y_i-\hat{y}_i)^2}{n}} = \sqrt{\frac{\sum_{i=1}^n\epsilon_i^2}{n}}
+\]</span></p>
+<p>RMSE is an estimate of the magnitude of a typical residual.</p>
+</section>
+<section id="problems-with-rmse" class="level3">
+<h3 class="anchored" data-anchor-id="problems-with-rmse">Problems with RMSE</h3>
+<p>The RMSE will depend on the observations that end up being in the training and validation data sets.</p>
 <ul>
-<li><p>% of individuals with a bachelor’s degree or more</p></li>
-<li><p>Presence of a park (binary)</p></li>
-<li><p>Police unit covering the block group (categorical in A, B, C, and D)</p></li>
-<li><p>Parking type (categorical, type of parking)</p></li>
+<li>If we repeat the process of randomly splitting the sample set into two parts, we will get a somewhat different estimate for the RMSE each time, and that may affect the selection of the best model.</li>
 </ul>
-<p>There will always be <span class="math inline">\(n-1\)</span> predictors for <span class="math inline">\(n\)</span> categories in a predictor.</p>
+<p>Only part of the observations (those which are included in the training dataset) are used for model fitting and parameter estimation. This is especially problematic if our initial dataset is already small</p>
+</section>
+<section id="potential-solutions" class="level3">
+<h3 class="anchored" data-anchor-id="potential-solutions">Potential solutions</h3>
+<p><strong>Leave One Out Cross Validation</strong></p>
 <ul>
-<li><p>If Unit A = 0, Unit B = 0, Unit C = 0, then it must be the case that the Police Unit must be Unit D.</p></li>
-<li><p>Since D is the reference category, the <span class="math inline">\(\hat{\beta}\)</span> values are all in comparison to D.</p></li>
+<li>Holds out one observation from the dataset, estimate its <span class="math inline">\(\hat{y}\)</span> and <span class="math inline">\(\epsilon\)</span> from the model, and then does the same thing for every single value from the dataset. The RMSE is then calculated.</li>
 </ul>
-<p><span class="math inline">\(\beta_0\)</span> represents median household value where A, B, and C and are all equal to zero (so it’s the median household income where the block group is D). The equation would be:</p>
-<p><span class="math display">\[
-y=\text{Agg. Assaults}=\beta_0+\beta_1\text{Med. HVal.}+\beta_2\text{Parks}+\beta_3\text{DummyA} + \beta_4\text{DummyB}+\beta_5\text{DummyC}
-\]</span></p>
-<p>When we receive the outputs from R, we plug in the coefficients to make a prediction.</p>
-<p><span class="math display">\[
-\hat{y}=30.21-0.56\text{Med. HVal.}+9.31\text{Parks}+0.13\text{DummyA}-1.27\text{DummyB}+0.34\text{DummyC}
-\]</span></p>
-<p><span class="math display">\[
-\hat{y}=30.21 - 0.56(35) + 9.31(0) + 0.13(0) -1.27(0)+0.34(0) = 10.61
-\]</span></p>
-<p>In this case, the model over-predicts the value of Aggravated Assaults by <span class="math inline">\(0.61\)</span>.</p>
+<p><span class="math inline">\(k\)</span><strong>-fold Cross Validation</strong></p>
+<ul>
+<li><p>Quicker than LOOCV if you have a large sample size <span class="math inline">\(n\)</span>.</p></li>
+<li><p>Involves randomly dividing the set of observations into <span class="math inline">\(k\)</span> groups or “folds” of approximately equal size.</p></li>
+<li><p>The 1st fold is treated as a validation dataset and the model is fitted on the remaining <span class="math inline">\(k-1\)</span> folds.</p></li>
+<li><p>Like with LOOCV, we then calculate the RMSE.</p></li>
+</ul>
+</section>
+<section id="overfitting" class="level3">
+<h3 class="anchored" data-anchor-id="overfitting">Overfitting</h3>
+<p>Even though a complicated model may do very well with modeling training data, the same model will likely be abysmal at modeling unseen data.</p>
 </section>
 </section>
-<section id="regression-assumptions" class="level2">
-<h2 class="anchored" data-anchor-id="regression-assumptions">Regression Assumptions</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 31%">
-<col style="width: 68%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Assumption</th>
-<th>Assumption Check</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Linear relationship</strong> between dependent variable <span class="math inline">\(y\)</span> and each predictor <span class="math inline">\(x\)</span></td>
-<td>Scatterplots between <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span></td>
-</tr>
-<tr class="even">
-<td><p><strong>Normality of residuals</strong></p>
-<p><span class="math inline">\(\epsilon\sim\mathcal{N}(0,\sigma^2)\)</span></p></td>
-<td>Look at the histogram of the residuals to see if they are normal</td>
-</tr>
-<tr class="odd">
-<td><strong>Homoscedasticity.</strong> The variance of the residuals <span class="math inline">\(\epsilon\)</span> is constant regardless of the values of each <span class="math inline">\(x\)</span></td>
-<td>Look at the scatterplots of standardized residuals against each predictor and see if variance of residuals remains the same for different values of each predictor</td>
-</tr>
-<tr class="even">
-<td><strong>Independence of observations.</strong> There should be no spatial or temporal dependence in the data.</td>
-<td>Look at the Moran’s <span class="math inline">\(I\)</span> of the residuals or the values of <span class="math inline">\(y\)</span> to examine whether the regression residuals, or the dependent variable itself, are spatially autocorrelated.</td>
-</tr>
-<tr class="odd">
-<td><strong>No multicolinearity</strong> (applies only to multiple regression).</td>
-<td>Look at the correlation matrix of predictors. If correlation between any pair of predictors <span class="math inline">\(&gt;0.8\)</span> we might have multicolinarity. Alternatively regress each predictor against eachother and look at the <span class="math inline">\(R^2\)</span> (should not be <span class="math inline">\(&gt;0.8\)</span>) or the <span class="math inline">\(\text{VIF}\)</span>.</td>
-</tr>
-<tr class="even">
-<td><strong>No fewer than 10 observations per predictor.</strong></td>
-<td>Look at the ratio between the # observations and # of predictors.</td>
-</tr>
-</tbody>
-</table>
-<section id="calculating-the-variance-inflation-factor" class="level3">
-<h3 class="anchored" data-anchor-id="calculating-the-variance-inflation-factor">Calculating the Variance Inflation Factor</h3>
-<p><span class="math display">\[
-\text{VIF}(x_j)=\frac{1}{1-R^2_j}
-\]</span></p>
-<ol type="1">
-<li>For each predictor <span class="math inline">\(X_j\)</span>, regress <span class="math inline">\(X_j\)</span> on the other predictors.</li>
-<li><span class="math inline">\(R^2_j\)</span> is the <span class="math inline">\(R^2\)</span> from that auxiliary regression.</li>
-<li>Then compute the <span class="math inline">\(\text{VIF}\)</span> from the formula above.</li>
-</ol>
-</section>
-</section>
-<section id="example-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="example-in-r">Example in R</h2>
-<section id="checking-linearity" class="level3">
-<h3 class="anchored" data-anchor-id="checking-linearity">Checking Linearity</h3>
+<section id="practice-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="practice-in-r">Practice in R</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>multregdata <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">'RegressionData.csv'</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(multregdata<span class="sc">$</span>MEDHHINC, multregdata<span class="sc">$</span>MEDHVAL)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Lecture7_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DAAG)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>multregdata <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">'RegressionData.csv'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(multregdata<span class="sc">$</span>MEDHHINC, multregdata<span class="sc">$</span>PCTVACANT)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Lecture7_files/figure-html/unnamed-chunk-1-2.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(multregdata<span class="sc">$</span>MEDHHINC, multregdata<span class="sc">$</span>PCTBACHMOR)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Lecture7_files/figure-html/unnamed-chunk-1-3.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>What we’re trying to avoid is very obvious patterns where the relationship is not linear (ex. it’s a parabola).</p>
-</section>
-<section id="checking-multicolinearity" class="level3">
-<h3 class="anchored" data-anchor-id="checking-multicolinearity">Checking multicolinearity</h3>
-<p>Looking at pairwise correlations:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>predictors <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">cbind</span>(multregdata<span class="sc">$</span>MEDHVAL, multregdata<span class="sc">$</span>PCTVACANT, multregdata<span class="sc">$</span>BCTBACHMOR))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(predictors)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DAAG)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(MEDHHINC <span class="sc">~</span> PCTVACANT <span class="sc">+</span> PCTSINGLES, <span class="at">data =</span> multregdata)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>cv <span class="ot">&lt;-</span> <span class="fu">CVlm</span>(<span class="at">data =</span> multregdata, fit, <span class="at">m =</span> <span class="dv">5</span>, <span class="at">plotit =</span> <span class="cn">FALSE</span>, <span class="at">printit =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>cv_rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((cv<span class="sc">$</span>MEDHHINC <span class="sc">-</span> cv<span class="sc">$</span>cvpred)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>cv_mae  <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">abs</span>(cv<span class="sc">$</span>MEDHHINC <span class="sc">-</span> cv<span class="sc">$</span>cvpred))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"CV RMSE:"</span>, <span class="fu">round</span>(cv_rmse), <span class="st">"</span><span class="sc">\n</span><span class="st">CV MAE: "</span>, <span class="fu">round</span>(cv_mae), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>           [,1]       [,2]
-[1,]  1.0000000 -0.3266071
-[2,] -0.3266071  1.0000000</code></pre>
+<pre><code>CV RMSE: 13677 
+CV MAE:  9540 </code></pre>
 </div>
 </div>
-</section>
-<section id="running-the-regression" class="level3">
-<h3 class="anchored" data-anchor-id="running-the-regression">Running the regression</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="at">formula =</span> MEDHHINC <span class="sc">~</span> MEDHVAL <span class="sc">+</span> PCTVACANT <span class="sc">+</span> PCTBACHMOR, <span class="at">data=</span>multregdata)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">attr</span>(cv, <span class="st">"ms"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(mse)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>rmse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = MEDHHINC ~ MEDHVAL + PCTVACANT + PCTBACHMOR, data = multregdata)
-
-Residuals:
-   Min     1Q Median     3Q    Max 
--82863  -5993   -185   5950  69792 
-
-Coefficients:
-                Estimate   Std. Error t value             Pr(&gt;|t|)    
-(Intercept) 25003.235067   627.836172  39.824 &lt; 0.0000000000000002 ***
-MEDHVAL         0.130716     0.006699  19.514 &lt; 0.0000000000000002 ***
-PCTVACANT    -376.207508    31.101789 -12.096 &lt; 0.0000000000000002 ***
-PCTBACHMOR    131.860784    22.400341   5.887        0.00000000473 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 11670 on 1716 degrees of freedom
-Multiple R-squared:  0.4879,    Adjusted R-squared:  0.487 
-F-statistic:   545 on 3 and 1716 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<pre><code>[1] 13676.84</code></pre>
 </div>
 </div>
-</section>
-<section id="variance-inflation-factor" class="level3">
-<h3 class="anchored" data-anchor-id="variance-inflation-factor">Variance Inflation Factor</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: carData</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">vif</span>(fit))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>   MEDHVAL  PCTVACANT PCTBACHMOR 
-  2.038118   1.131236   1.998619 </code></pre>
-</div>
-</div>
-<p>Because none of the VIFs ar greater than 4, there are no issues with multicolinearity.</p>
-</section>
-<section id="checking-the-normality-of-residuals" class="level3">
-<h3 class="anchored" data-anchor-id="checking-the-normality-of-residuals">Checking the normality of residuals</h3>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>multregdata<span class="sc">$</span>resids <span class="ot">&lt;-</span> <span class="fu">resid</span>(fit)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(multregdata<span class="sc">$</span>resids)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cv, <span class="fu">aes</span>(<span class="at">x =</span> cvpred, <span class="at">y =</span> MEDHHINC, <span class="at">color =</span> <span class="fu">factor</span>(fold))) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>, <span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> fold) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Set1"</span>, <span class="at">name =</span> <span class="st">"Fold"</span>) <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Cross-validated predicted median household income"</span>, <span class="at">y =</span> <span class="st">"Actual median household income"</span>) <span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Lecture7_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Lecture8_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-</section>
-<section id="checking-for-heteroskedasticity" class="level3">
-<h3 class="anchored" data-anchor-id="checking-for-heteroskedasticity">Checking for heteroskedasticity</h3>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>multregdata<span class="sc">$</span>predvals <span class="ot">&lt;-</span> <span class="fu">fitted</span>(fit)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>multregdata<span class="sc">$</span>stdres <span class="ot">&lt;-</span> <span class="fu">rstandard</span>(fit)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(multregdata<span class="sc">$</span>predvals, multregdata<span class="sc">$</span>stdres)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Lecture7_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>This is a classic example of heteroskedasticity! Let’s see the plots between the residuals and each individual variable.</p>
-</section>
-</section>
-<section id="a-review-of-logarithms" class="level2">
-<h2 class="anchored" data-anchor-id="a-review-of-logarithms">A review of logarithms</h2>
-<p>Logarithms are the opposite of exponentiation.</p>
-<p><span class="math display">\[
-\text{if } x=b^y,\text{ then }y=\text{log}_b(x)
-\]</span></p>
-<p>When the base is <span class="math inline">\(e\)</span>, we have a natural logarithm denoted by <span class="math inline">\(\text{ln}\)</span>.</p>
-<section id="textlog-transformations" class="level3">
-<h3 class="anchored" data-anchor-id="textlog-transformations"><span class="math inline">\(\text{log}\)</span> transformations</h3>
-<p>Sometimes, it is possible to make a variable normal by subjecting it to some simple algebraic operations.</p>
-<ul>
-<li>It can help with a non-normality of residuals, non-linear relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, or heteroskedasdicity.</li>
-</ul>
-<!-- -->
-<ul>
-<li>For <span class="math inline">\(x&gt;1\)</span>, <span class="math inline">\(\text{ln}(x)\)</span> increases as <span class="math inline">\(x\)</span> increases, but at a slower pace.</li>
-</ul>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>multregdata<span class="sc">$</span>LNMEDHHINC <span class="ot">&lt;-</span> <span class="fu">log</span>(multregdata<span class="sc">$</span>MEDHHINC <span class="sc">+</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

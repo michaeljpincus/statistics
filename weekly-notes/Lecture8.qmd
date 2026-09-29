@@ -1,6 +1,6 @@
 ---
 title: "Lecture8"
-description: ""
+description: "Log Transformations, Polynomial Regression, Cross-Validation"
 date: 09-26-2026
 editor: visual
 ---
@@ -124,7 +124,7 @@ The RMSE will depend on the observations that end up being in the training and v
 
 Only part of the observations (those which are included in the training dataset) are used for model fitting and parameter estimation. This is especially problematic if our initial dataset is already small
 
-### Potential solutions 
+### Potential solutions
 
 **Leave One Out Cross Validation**
 
@@ -140,27 +140,42 @@ $k$**-fold Cross Validation**
 
 - Like with LOOCV, we then calculate the RMSE.
 
-### Overfitting 
+### Overfitting
 
 Even though a complicated model may do very well with modeling training data, the same model will likely be abysmal at modeling unseen data.
-
-![](images/clipboard-2429329681.png)
 
 ## Practice in R
 
 ```{r}
 library(DAAG)
-multregdata <- read.csv('weekly-notes/RegressionData.csv')
+multregdata <- read.csv('RegressionData.csv')
 ```
 
 ```{r}
-fit <- lm(MEDHHINC~PCTVACANT + PCTSINGLES, data=multregdata)
+library(DAAG)
+library(ggplot2)
 
-cv <- CVlm(data=multregdata, fit, m=5)
+fit <- lm(MEDHHINC ~ PCTVACANT + PCTSINGLES, data = multregdata)
+
+cv <- CVlm(data = multregdata, fit, m = 5, plotit = FALSE, printit = FALSE)
+
+cv_rmse <- sqrt(mean((cv$MEDHHINC - cv$cvpred)^2))
+cv_mae  <- mean(abs(cv$MEDHHINC - cv$cvpred))
+cat("CV RMSE:", round(cv_rmse), "\nCV MAE: ", round(cv_mae), "\n")
 ```
 
 ```{r}
 mse <- attr(cv, "ms")
 rmse <- sqrt(mse)
 rmse
+```
+
+```{r}
+ggplot(cv, aes(x = cvpred, y = MEDHHINC, color = factor(fold))) +
+  geom_point(alpha = 0.4) +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +
+  facet_wrap(~ fold) +
+  scale_color_brewer(palette = "Set1", name = "Fold") +
+  labs(x = "Cross-validated predicted median household income", y = "Actual median household income") +
+  theme_minimal()
 ```
