@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-09-30">
+<meta name="description" content="Stepwise, Lasso, and Ridge Regression">
+
+<title>Lecture 9 – Geospatial Statistics Portfolio</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-7648515a79679b3b16e4ac9be30e983f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Geospatial Statistics Portfolio</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../weekly-notes/index.html"> 
+<span class="menu-text">Weekly Notes</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#stepwise-regression-automatic-predictor-selection" id="toc-stepwise-regression-automatic-predictor-selection" class="nav-link active" data-scroll-target="#stepwise-regression-automatic-predictor-selection">Stepwise Regression: Automatic Predictor Selection</a>
+  <ul class="collapse">
+  <li><a href="#in-r" id="toc-in-r" class="nav-link" data-scroll-target="#in-r">In R:</a></li>
+  </ul></li>
+  <li><a href="#some-issues-with-ols-regression" id="toc-some-issues-with-ols-regression" class="nav-link" data-scroll-target="#some-issues-with-ols-regression">Some issues with OLS regression</a></li>
+  <li><a href="#ridge-regression" id="toc-ridge-regression" class="nav-link" data-scroll-target="#ridge-regression">Ridge Regression</a>
+  <ul class="collapse">
+  <li><a href="#the-shrinkage-penalty" id="toc-the-shrinkage-penalty" class="nav-link" data-scroll-target="#the-shrinkage-penalty">The shrinkage penalty</a></li>
+  <li><a href="#the-intercept-term" id="toc-the-intercept-term" class="nav-link" data-scroll-target="#the-intercept-term">The intercept term</a></li>
+  <li><a href="#standardizing-predictors" id="toc-standardizing-predictors" class="nav-link" data-scroll-target="#standardizing-predictors">Standardizing predictors</a></li>
+  </ul></li>
+  <li><a href="#bias-and-variance" id="toc-bias-and-variance" class="nav-link" data-scroll-target="#bias-and-variance">Bias and Variance</a>
+  <ul class="collapse">
+  <li><a href="#bias-of-an-estimator" id="toc-bias-of-an-estimator" class="nav-link" data-scroll-target="#bias-of-an-estimator">Bias of an estimator</a></li>
+  <li><a href="#variance-of-an-estimator" id="toc-variance-of-an-estimator" class="nav-link" data-scroll-target="#variance-of-an-estimator">Variance of an Estimator</a></li>
+  <li><a href="#mse-a-function-of-bias-and-variance" id="toc-mse-a-function-of-bias-and-variance" class="nav-link" data-scroll-target="#mse-a-function-of-bias-and-variance">MSE: A function of bias and variance</a></li>
+  <li><a href="#ols-vs-ridge" id="toc-ols-vs-ridge" class="nav-link" data-scroll-target="#ols-vs-ridge">OLS vs Ridge</a></li>
+  <li><a href="#ridge-regression-interpretation" id="toc-ridge-regression-interpretation" class="nav-link" data-scroll-target="#ridge-regression-interpretation">Ridge regression interpretation</a></li>
+  </ul></li>
+  <li><a href="#lasso-regression" id="toc-lasso-regression" class="nav-link" data-scroll-target="#lasso-regression">Lasso Regression</a></li>
+  <li><a href="#comparing-ridge-and-lasso-regression" id="toc-comparing-ridge-and-lasso-regression" class="nav-link" data-scroll-target="#comparing-ridge-and-lasso-regression">Comparing Ridge and Lasso regression</a></li>
+  <li><a href="#example-in-r" id="toc-example-in-r" class="nav-link" data-scroll-target="#example-in-r">Example in R</a>
+  <ul class="collapse">
+  <li><a href="#ridge-regression-1" id="toc-ridge-regression-1" class="nav-link" data-scroll-target="#ridge-regression-1">Ridge regression</a></li>
+  <li><a href="#training-and-validation" id="toc-training-and-validation" class="nav-link" data-scroll-target="#training-and-validation">Training and validation</a></li>
+  <li><a href="#lasso-regression-1" id="toc-lasso-regression-1" class="nav-link" data-scroll-target="#lasso-regression-1">Lasso Regression</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lecture 9</h1>
+</div>
+
+<div>
+  <div class="description">
+    Stepwise, Lasso, and Ridge Regression
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 30, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="stepwise-regression-automatic-predictor-selection" class="level2">
+<h2 class="anchored" data-anchor-id="stepwise-regression-automatic-predictor-selection">Stepwise Regression: Automatic Predictor Selection</h2>
+<p>Simple data mining method which selects predictors based on some criteria</p>
+<ul>
+<li><p><span class="math inline">\(p\)</span>-values below a certain threshold (ex. only include variables where <span class="math inline">\(p\)</span>-values <span class="math inline">\(&lt;0.01\)</span>)</p></li>
+<li><p>Smallest value of the Akaike Information Criterion (AIC), a measure of relative quality of statistical models</p></li>
+</ul>
+<p>There are a number of problems with it:</p>
+<ul>
+<li><p>The final model is not guaranteed to be optimal in any specified sense</p></li>
+<li><p>The procedure yields a single final model, although there are often several equally good models</p></li>
+<li><p>Stepwise regression does not take into account a researcher’s knowledge about the predictors, it may be necessary to force the procedure to include more important predictors.</p></li>
+<li><p>We should not jump to the conclusion that all the important predictor variables for predicting <span class="math inline">\(y\)</span> have been identified, or that all the unimportant predictor variables have been eliminated. It is possible that we may have committed a Type I or Type II error.</p></li>
+<li><p>Many <span class="math inline">\(t\)</span>-tests testing <span class="math inline">\(\beta_k=0\)</span> are conducted in a stepwise regression procedure. The probability is therefore high that we included some unimportant predictors or excluded some important predictors.</p></li>
+</ul>
+<section id="in-r" class="level3">
+<h3 class="anchored" data-anchor-id="in-r">In R:</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>mydata <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">'RegressionData.csv'</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(MEDHVAL <span class="sc">~</span> PCTBACHMOR <span class="sc">+</span> PCTVACANT <span class="sc">+</span> MEDHHINC <span class="sc">+</span> PCTSINGLES, <span class="at">data=</span>mydata)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>step <span class="ot">&lt;-</span> <span class="fu">stepAIC</span>(fit, <span class="at">direction=</span><span class="st">'both'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Start:  AIC=36255.65
+MEDHVAL ~ PCTBACHMOR + PCTVACANT + MEDHHINC + PCTSINGLES
+
+             Df  Sum of Sq        RSS   AIC
+- PCTVACANT   1 2.7340e+09 2.4430e+12 36256
+&lt;none&gt;                     2.4403e+12 36256
+- PCTSINGLES  1 4.5136e+10 2.4854e+12 36285
+- MEDHHINC    1 3.8195e+11 2.8222e+12 36504
+- PCTBACHMOR  1 1.0438e+12 3.4841e+12 36866
+
+Step:  AIC=36255.58
+MEDHVAL ~ PCTBACHMOR + MEDHHINC + PCTSINGLES
+
+             Df  Sum of Sq        RSS   AIC
+&lt;none&gt;                     2.4430e+12 36256
++ PCTVACANT   1 2.7340e+09 2.4403e+12 36256
+- PCTSINGLES  1 4.4646e+10 2.4877e+12 36285
+- MEDHHINC    1 4.4540e+11 2.8884e+12 36542
+- PCTBACHMOR  1 1.0612e+12 3.5042e+12 36874</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="some-issues-with-ols-regression" class="level2">
+<h2 class="anchored" data-anchor-id="some-issues-with-ols-regression">Some issues with OLS regression</h2>
+<ul>
+<li><p>The # of observations has to be larger than the # of predictors</p>
+<ul>
+<li><p>In practice, in OLS regression we should have at the very least 10 observations per predictor</p></li>
+<li><p>Probability of type II error (incorrectly failing to reject <span class="math inline">\(H_0\)</span>) decreases as the number of observations per predictor increases</p></li>
+</ul></li>
+<li><p>Multicollinearity</p>
+<ul>
+<li>If the predictors are strongly correlated, the OLS <span class="math inline">\(\beta\)</span> coefficient estimates have large variances, and they may be far from the true value</li>
+</ul></li>
+<li><p>Overfitting</p>
+<ul>
+<li><p>The way OLS regression parameters are estimated, we will always have some estimate for the coefficients of every predictor and they will often be non-zero, even though some of these predictors may not be truly related to the dependent variable.</p></li>
+<li><p>These non-zero parameter estimates may not make much sense when fitting the same model to a different dataset</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="ridge-regression" class="level2">
+<h2 class="anchored" data-anchor-id="ridge-regression">Ridge Regression</h2>
+<p>Ridge regression offers a solution to these issues. In particular, it:</p>
+<ul>
+<li><p>Allows for a large # of predictors relative to the # of observations</p></li>
+<li><p>Allows for multicollinearity</p></li>
+<li><p>Deals with overfitting by shrinking the coefficients of variables towards 0</p></li>
+<li><p>Instead of minimizing the <span class="math inline">\(\text{SSE}\)</span>, it minimizes the <span class="math inline">\(\text{SSE}\)</span> subject to a bound (a constraint) on the quantity called <span class="math inline">\(L_2\text{norm}\)</span>, which is simply the square root fo the sum of all squared <span class="math inline">\(\beta\)</span> coefficients.</p>
+<p><span class="math display">\[
+L_2\text{norm}=\Vert \boldsymbol{\beta} \Vert_2 = \sqrt{\sum_{i=1}^{k} \beta_i^2}
+\]</span></p></li>
+</ul>
+<p>Recall that OLS regression finds <span class="math inline">\(\hat{\beta_i}\)</span> that minimize the sum of squared errors, where <span class="math inline">\(\text{SSE}=\sum\epsilon^2\)</span>.</p>
+<p><strong>Ridge regression</strong> finds <span class="math inline">\(\hat{\beta^R_i}\)</span> that minimizes the quantity below:</p>
+<p><span class="math display">\[
+\text{SSE} + \lambda(\hat{\beta}_1^2+\hat{\beta}_2^2 + \dots + \hat{\beta}_k^2)
+\]</span></p>
+<p>Here, <span class="math inline">\(\lambda\ge0\)</span> is called the <strong>tuning parameter</strong>.</p>
+<section id="the-shrinkage-penalty" class="level3">
+<h3 class="anchored" data-anchor-id="the-shrinkage-penalty">The shrinkage penalty</h3>
+<p><span class="math inline">\(\lambda\)</span> is called the tuning parameter which controls the relative impact of <span class="math inline">\(\text{SSE}\)</span> and the shrinkage pentalty on the regression coefficient estimates.</p>
+<p>When <span class="math inline">\(\lambda=0\)</span>, the shrinkage penalty term has no effect, and you get plain OLS.</p>
+<p>As <span class="math inline">\(\lambda \to \infty\)</span>, the impact of the shrinkage penalty grows, and the ridge regression coefficient estimates <span class="math inline">\(\hat{\beta_i}\)</span> will approach 0, making the model smaller</p>
+</section>
+<section id="the-intercept-term" class="level3">
+<h3 class="anchored" data-anchor-id="the-intercept-term">The intercept term</h3>
+<p>Note that <span class="math inline">\(\hat{\beta}_0\)</span> is not part of the shrinkage penalty. We do not want to shrink the intercept, which is simply a measure of the mean value of <span class="math inline">\(y\)</span> when all predictors are equal to 0.</p>
+</section>
+<section id="standardizing-predictors" class="level3">
+<h3 class="anchored" data-anchor-id="standardizing-predictors">Standardizing predictors</h3>
+<p>For ridge regression, we standardize predictors.</p>
+<p>For each predictor <span class="math inline">\(x\)</span>, compute the mean <span class="math inline">\(\bar{x}\)</span> and standard deviation <span class="math inline">\(s_x\)</span>. Then, take the original value of the predictor, subtract it from <span class="math inline">\(\bar{x}\)</span>, and divide the difference by <span class="math inline">\(s_x\)</span>.<br>
+</p>
+<p>This way, each standardized predictor will have a mean of 0 and a standard deviation of 1 prior to running the regression.</p>
+</section>
+</section>
+<section id="bias-and-variance" class="level2">
+<h2 class="anchored" data-anchor-id="bias-and-variance">Bias and Variance</h2>
+<section id="bias-of-an-estimator" class="level3">
+<h3 class="anchored" data-anchor-id="bias-of-an-estimator">Bias of an estimator</h3>
+<p>Bias of an estimator is the difference between the expected value of the estimator and the true value of the parameter.</p>
+<p>For example, <span class="math inline">\(\bar{X}\)</span> is a point estimator of population mean <span class="math inline">\(\mu\)</span>. The bias of estimator <span class="math inline">\(\bar{X}\)</span> is the difference between <span class="math inline">\(\mathbb{E}(\bar{X})\)</span> and <span class="math inline">\(\mu\)</span>. However, because <span class="math inline">\(\mathbb{E}(\bar{X}) = \mu\)</span>, the difference is 0, and <span class="math inline">\(\bar{X}\)</span> is an <strong>unbiased</strong> estimator of <span class="math inline">\(\mu\)</span>.</p>
+<p>Similarly with OLS regression, <span class="math inline">\(\mathbb{E}(\hat{\beta}_i)=\beta_i\)</span>.</p>
+<p>Therefore, <strong>bias</strong> refers to the error that is introduced by approximating a real-life problem, which may be extremely complicated, by a much simpler model. Linear regression assumes that there is a linear relationship between the independent variable in predictors. In real life, it is highly unlikely that there is such a simple linear relationship so there will absolutely be some bias in the estimate of <span class="math inline">\(\hat{y}\)</span>.</p>
+</section>
+<section id="variance-of-an-estimator" class="level3">
+<h3 class="anchored" data-anchor-id="variance-of-an-estimator">Variance of an Estimator</h3>
+<p>If a variable is normal, both the sample mean <span class="math inline">\(\bar{X}\)</span> and the sample median <span class="math inline">\(\tilde{X}\)</span> are unbiased estimators of the population mean <span class="math inline">\(\mu\)</span>.</p>
+<p>Traditionally, statisticians have preferred unbiased estimators with the smallest variance.</p>
+<p>In the context of regression analysis, variance is the amount <span class="math inline">\(\hat{y}\)</span> would change if we estimated it using a different training data set.</p>
+<p><img src="images/clipboard-3027685638.png" class="img-fluid" width="353"></p>
+</section>
+<section id="mse-a-function-of-bias-and-variance" class="level3">
+<h3 class="anchored" data-anchor-id="mse-a-function-of-bias-and-variance">MSE: A function of bias and variance</h3>
+<p>The MSE (and consequently the RMSE) in the validation data is a function of both bias and variance.</p>
+<p>In order to minimize the MSE in unseen data, we need to select a model that simultaneously achieves low variance and low bias.</p>
+<p>OLS seems to be a good model because it yields unbiased estimates of <span class="math inline">\(\hat{y}\)</span> with the smallest variance. But even though OLS estimators are unbiased, they still have higher variance than some biased estimators.</p>
+<ul>
+<li>Ridge regression predictions <span class="math inline">\(\hat{y}\)</span> are biased, but have lower variance than OLS predictions for certain values of <span class="math inline">\(\lambda\)</span>.</li>
+</ul>
+<p>A visualization:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Lecture9_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can see as <span class="math inline">\(\lambda\)</span> gets larger, variance shrinks but MSE and bias grows. The trade-off benefit is better predictions on new data.</p>
+</section>
+<section id="ols-vs-ridge" class="level3">
+<h3 class="anchored" data-anchor-id="ols-vs-ridge">OLS vs Ridge</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 67%">
+<col style="width: 32%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>OLS wins</th>
+<th>Ridge wins</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>Lots of data, few features</p>
+<p>Care about unbiased coefficient estimates or classical inference (SE, confidence intervals, p-values)</p>
+<p>Care about interpretability</p></td>
+<td><p>You want to predict new data</p>
+<p>Features are highly correlated</p>
+<p>You have many features relative to observations</p>
+<p>OLS fit is noisy or unstable</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="ridge-regression-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="ridge-regression-interpretation">Ridge regression interpretation</h3>
+<p>We can show that ridge regression doesn’t set coefficients exactly to zero unless <span class="math inline">\(\lambda = \infty\)</span>, in which case they’re all 0. While ridge regression performs well in terms of prediction accuracy, it does poorly in terms of offering a clear interpretation.</p>
+<p>Because ridge regression modifies the coefficients, it’s pretty difficult to interpret and get significance from them.</p>
+<p>In summary:</p>
+<ul>
+<li><p>We select the value of <span class="math inline">\(\lambda\)</span> which yields the lowest MSE on unseen data</p></li>
+<li><p>For that optimal value of <span class="math inline">\(\lambda\)</span>, look at the plots of coefficients against <span class="math inline">\(\lambda\)</span> to figure out which variables have the greatest predictive power</p></li>
+</ul>
+<p>An important limitation is that ridge regression is it will include all <span class="math inline">\(k\)</span> predictors in the final model (unlike the stepwise linear regression that we saw before).</p>
+</section>
+</section>
+<section id="lasso-regression" class="level2">
+<h2 class="anchored" data-anchor-id="lasso-regression">Lasso Regression</h2>
+<p>Lasso is like ridge, but it can set the values of certain coefficients to exactly 0 for different values of <span class="math inline">\(\lambda\)</span> and therefore exclude them. It stands for Least Absolute Shrinkage and Selection Operator.</p>
+<p>Lasso regression finds <span class="math inline">\(\hat{\beta}^L_i\)</span> that minimizes the quantity below:</p>
+<p><span class="math display">\[
+\text{SSE} + \lambda(\vert\hat{\beta}_1^2\vert+\vert\hat{\beta}_2^2\vert + \dots + \vert\hat{\beta}_k^2\vert)
+\]</span></p>
+<p>Like with ridge, when <span class="math inline">\(\lambda=0\)</span>, we get OLS estimates. As <span class="math inline">\(\lambda\)</span> increases, the amount of non-zero standardized coefficients decreases:</p>
+<p><img src="images/clipboard-133860262.png" class="img-fluid" width="362"></p>
+<p>Like with ridge regression, we are able to see which predictors have the largest effect on the dependent variable by looking at the magnitude of the coefficients for different levels of <span class="math inline">\(\lambda\)</span>, especially the value that yields the lowest MSE on unseen data.</p>
+<p>There are issues with interpreting the coefficients of lasso regression due to bias (unlike with OLS).</p>
+<p>In summary:</p>
+<ul>
+<li><p>We select the value of <span class="math inline">\(\lambda\)</span> which yields the lowest MSE on unseen data</p></li>
+<li><p>For the optimal value of <span class="math inline">\(\lambda\)</span>, we will look at the plots of coefficients against <span class="math inline">\(\lambda\)</span> to figure out which variables have the greatest predictive power.</p></li>
+</ul>
+</section>
+<section id="comparing-ridge-and-lasso-regression" class="level2">
+<h2 class="anchored" data-anchor-id="comparing-ridge-and-lasso-regression">Comparing Ridge and Lasso regression</h2>
+<p>Lasso regression has a major advantage over ridge, in that it is able to produce simpler and more interpretable models that involve only a subset of the predictors. However, one is not inherently better than the other.</p>
+<p>Lasso will perform better where a relatively small # of predictors have substantial coefficients, and the remaining predictors have coefficients that are very small or equal zero</p>
+</section>
+<section id="example-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="example-in-r">Example in R</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loaded glmnet 5.1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen=</span><span class="dv">999</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Hitters)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  AtBat Hits HmRun Runs RBI Walks Years CAtBat CHits CHmRun
+-Andy Allanson      293   66     1   30  29    14     1    293    66      1
+-Alan Ashby         315   81     7   24  38    39    14   3449   835     69
+-Alvin Davis        479  130    18   66  72    76     3   1624   457     63
+-Andre Dawson       496  141    20   65  78    37    11   5628  1575    225
+-Andres Galarraga   321   87    10   39  42    30     2    396   101     12
+-Alfredo Griffin    594  169     4   74  51    35    11   4408  1133     19
+                  CRuns CRBI CWalks League Division PutOuts Assists Errors
+-Andy Allanson       30   29     14      A        E     446      33     20
+-Alan Ashby         321  414    375      N        W     632      43     10
+-Alvin Davis        224  266    263      A        W     880      82     14
+-Andre Dawson       828  838    354      N        E     200      11      3
+-Andres Galarraga    48   46     33      N        E     805      40      4
+-Alfredo Griffin    501  336    194      A        W     282     421     25
+                  Salary NewLeague
+-Andy Allanson        NA         A
+-Alan Ashby        475.0         N
+-Alvin Davis       480.0         A
+-Andre Dawson      500.0         N
+-Andres Galarraga   91.5         N
+-Alfredo Griffin   750.0         A</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(Hitters)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 322  20</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>Hitters <span class="ot">=</span> <span class="fu">na.omit</span>(Hitters)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(Hitters)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 263  20</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span><span class="fu">model.matrix</span>(Salary<span class="sc">~</span>.,Hitters)[,<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> Hitters<span class="sc">$</span>Salary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Preparing values of lambda:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">^</span><span class="fu">seq</span>(<span class="dv">10</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="at">length =</span> <span class="dv">100</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">index =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="at">lambda =</span> grid)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> index, <span class="at">y =</span> lambda)) <span class="sc">+</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Lecture9_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="ridge-regression-1" class="level3">
+<h3 class="anchored" data-anchor-id="ridge-regression-1">Ridge regression</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ridge.mod<span class="ot">=</span><span class="fu">glmnet</span>(x,y,<span class="at">alpha=</span><span class="dv">0</span>,<span class="at">lambda=</span>grid)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Looking at the definitions of the coefficient matrix, there will be 20 rows (19 predictors and one intercept term) and 100 values of lambda.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(<span class="fu">coef</span>(ridge.mod))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  20 100</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(ridge.mod<span class="sc">$</span>lambda[<span class="dv">1</span>], ridge.mod<span class="sc">$</span>lambda[<span class="dv">50</span>], ridge.mod<span class="sc">$</span>lambda[<span class="dv">100</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            [,1]     [,2] [,3]
+[1,] 10000000000 11497.57 0.01</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="fu">coef</span>(ridge.mod)[,<span class="dv">1</span>], <span class="fu">coef</span>(ridge.mod)[,<span class="dv">50</span>], <span class="fu">coef</span>(ridge.mod)[,<span class="dv">100</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                           [,1]          [,2]          [,3]
+(Intercept) 535.925693520897084 407.356050200  164.11321606
+AtBat         0.000000054434665   0.036957182   -1.97386151
+Hits          0.000000197458863   0.138180344    7.37772270
+HmRun         0.000000795652308   0.524629976    3.93660219
+Runs          0.000000333917810   0.230701523   -2.19873625
+RBI           0.000000352722151   0.239841459   -0.91623008
+Walks         0.000000415132259   0.289618741    6.20037718
+Years         0.000001697711384   1.107702929   -3.71403424
+CAtBat        0.000000004673743   0.003131815   -0.17510063
+CHits         0.000000017200708   0.011653637    0.21132772
+CHmRun        0.000000129717067   0.087545670    0.05629004
+CRuns         0.000000034508457   0.023379882    1.36605490
+CRBI          0.000000035613483   0.024138320    0.70965516
+CWalks        0.000000037678772   0.025015421   -0.79582173
+LeagueN      -0.000000580026254   0.085028114   63.40493257
+DivisionW    -0.000007807263348  -6.215440973 -117.08243713
+PutOuts       0.000000021802880   0.016482577    0.28202541
+Assists       0.000000003561198   0.002612988    0.37318482
+Errors       -0.000000016604602  -0.020502690   -3.42400281
+NewLeagueN   -0.000000115228775   0.301433531  -25.99081928</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 535.9259</code></pre>
+</div>
+</div>
+</section>
+<section id="training-and-validation" class="level3">
+<h3 class="anchored" data-anchor-id="training-and-validation">Training and validation</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>train<span class="ot">=</span><span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(x), <span class="fu">nrow</span>(x)<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>test <span class="ot">=</span> (<span class="sc">-</span>train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, we will fit a ridge regression model on the training set, and evaluate its MSE on the test set using <span class="math inline">\(\lambda=4\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>y.test <span class="ot">=</span> y[test]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>ridge.mod <span class="ot">=</span> <span class="fu">glmnet</span>(x[train,], y[train], <span class="at">alpha=</span><span class="dv">0</span>, <span class="at">lambda=</span>grid, <span class="at">thresh=</span><span class="fl">1e-12</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in .resolve_control(control = control, nvars = nvars, deprecated =
+list(thresh = if (!missing(thresh)) thresh, : Passing 'thresh' to glmnet() is
+deprecated. Use control = list(thresh = ...) instead.</code></pre>
+</div>
+</div>
+<p>What do we get when lambda is 4?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ridge.pred <span class="ot">=</span> <span class="fu">predict</span>(ridge.mod, <span class="at">s=</span><span class="dv">4</span>, <span class="at">newx=</span>x[test,])</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ridge.pred)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                        s=4
+-Alvin Davis       735.6990
+-Andre Dawson     1184.6088
+-Andres Galarraga  525.5162
+-Alfredo Griffin   379.5287
+-Al Newman         338.1078
+-Argenis Salazar    76.2617</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>test.mse<span class="ot">=</span><span class="fu">mean</span>((ridge.pred<span class="sc">-</span>y.test)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(test.mse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 142199.2</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>test.rmse <span class="ot">=</span> <span class="fu">sqrt</span>(test.mse)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(test.rmse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 377.093</code></pre>
+</div>
+</div>
+<p>What if we choose a value of a very large lambda?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>ridge.pred<span class="ot">=</span><span class="fu">predict</span>(ridge.mod, <span class="at">s=</span><span class="fl">1e10</span>, <span class="at">newx=</span>x[test,])</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ridge.pred)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  s=10000000000
+-Alvin Davis           531.8654
+-Andre Dawson          531.8655
+-Andres Galarraga      531.8653
+-Alfredo Griffin       531.8654
+-Al Newman             531.8652
+-Argenis Salazar       531.8652</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>test.mse<span class="ot">=</span><span class="fu">mean</span>((ridge.pred<span class="sc">-</span>y.test)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>test.mse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 224669.8</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>test.rmse <span class="ot">=</span> <span class="fu">sqrt</span>(test.mse)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>test.rmse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 473.9935</code></pre>
+</div>
+</div>
+<p>What about when lambda = 0, getting OLS estimates?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>ridge.pred <span class="ot">=</span> <span class="fu">predict</span>(ridge.mod, <span class="at">s=</span><span class="dv">0</span>, <span class="at">newx=</span>x[test,])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>test.mse<span class="ot">=</span><span class="fu">mean</span>((ridge.pred<span class="sc">-</span>y.test)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>test.mse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 167789.8</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>test.rmse <span class="ot">=</span> <span class="fu">sqrt</span>(test.mse)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>test.rmse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 409.6215</code></pre>
+</div>
+</div>
+<p>How do we choose the best one? There’s a cross-validation (CV) method for this:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>cv.out<span class="ot">=</span><span class="fu">cv.glmnet</span>(x[train,], y[train], <span class="at">alpha=</span><span class="dv">0</span>, <span class="at">nfolds=</span><span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv.out)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Lecture9_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>bestlam <span class="ot">=</span> cv.out<span class="sc">$</span>lambda.min</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>bestlam</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 326.0828</code></pre>
+</div>
+</div>
+<p>Now let’s use this best lambda!</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>ridge.pred <span class="ot">=</span> <span class="fu">predict</span>(ridge.mod, <span class="at">s=</span>bestlam, <span class="at">newx=</span>x[test,])</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>mse.bestlam <span class="ot">&lt;-</span> <span class="fu">mean</span>((ridge.pred<span class="sc">-</span>y.test)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>rmse.bestlam <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(mse.bestlam)</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>mse.bestlam</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 139856.6</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>rmse.bestlam</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 373.9741</code></pre>
+</div>
+</div>
+</section>
+<section id="lasso-regression-1" class="level3">
+<h3 class="anchored" data-anchor-id="lasso-regression-1">Lasso Regression</h3>
+<p><code>alpha=1</code> signifies that we’re doing lasso, not ridge.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>lasso.mod <span class="ot">=</span> <span class="fu">glmnet</span>(x[train,],y[train],<span class="at">alpha=</span><span class="dv">1</span>,<span class="at">lambda=</span>grid)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>cv.out<span class="ot">=</span><span class="fu">cv.glmnet</span>(x[train,],y[train],<span class="at">alpha=</span><span class="dv">1</span>)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv.out)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Lecture9_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>bestlam <span class="ot">=</span> cv.out<span class="sc">$</span>lambda.min</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>bestlam</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9.286955</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>lasso.pred <span class="ot">=</span> <span class="fu">predict</span>(lasso.mod, <span class="at">s=</span>bestlam, <span class="at">newx=</span>x[test,])</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>mse.bestlam.lasso <span class="ot">&lt;-</span> <span class="fu">mean</span>((lasso.pred<span class="sc">-</span>y.test)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>rmse.bestlam.lasso <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(mse.bestlam.lasso)</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>mse.bestlam.lasso</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 143673.6</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>rmse.bestlam.lasso</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 379.043</code></pre>
+</div>
+</div>
+<p>Here, we can see that Lasso has a substantial advantage over ridge, in that the resulting coefficient estimates are sparse.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>out<span class="ot">=</span><span class="fu">glmnet</span>(x,y,<span class="at">alpha=</span><span class="dv">1</span>,<span class="at">lambda=</span>grid)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>lasso.coef<span class="ot">=</span><span class="fu">predict</span>(out,<span class="at">type=</span><span class="st">"coefficients"</span>,<span class="at">s=</span>bestlam)[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,]</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>lasso.coef</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  (Intercept)         AtBat          Hits         HmRun          Runs 
+   1.27479059   -0.05497143    2.18034583    0.00000000    0.00000000 
+          RBI         Walks         Years        CAtBat         CHits 
+   0.00000000    2.29192406   -0.33806109    0.00000000    0.00000000 
+       CHmRun         CRuns          CRBI        CWalks       LeagueN 
+   0.02825013    0.21628385    0.41712537    0.00000000   20.28615023 
+    DivisionW       PutOuts       Assists        Errors    NewLeagueN 
+-116.16755870    0.23752385    0.00000000   -0.85629148    0.00000000 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>lasso.coef[lasso.coef<span class="sc">!=</span><span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  (Intercept)         AtBat          Hits         Walks         Years 
+   1.27479059   -0.05497143    2.18034583    2.29192406   -0.33806109 
+       CHmRun         CRuns          CRBI       LeagueN     DivisionW 
+   0.02825013    0.21628385    0.41712537   20.28615023 -116.16755870 
+      PutOuts        Errors 
+   0.23752385   -0.85629148 </code></pre>
+</div>
+</div>
+<p>What if we just did OLS (lambda=0)?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>lasso.lm <span class="ot">=</span> <span class="fu">lm</span>(y<span class="sc">~</span>Hitters<span class="sc">$</span>AtBat <span class="sc">+</span> Hitters<span class="sc">$</span>Hits <span class="sc">+</span> Hitters<span class="sc">$</span>Walks <span class="sc">+</span> Hitters<span class="sc">$</span>Years <span class="sc">+</span> Hitters<span class="sc">$</span>CHmRun <span class="sc">+</span> Hitters<span class="sc">$</span>CRuns <span class="sc">+</span> Hitters<span class="sc">$</span>CRBI <span class="sc">+</span> Hitters<span class="sc">$</span>League <span class="sc">+</span> Hitters<span class="sc">$</span>Division <span class="sc">+</span> Hitters<span class="sc">$</span>PutOuts <span class="sc">+</span> Hitters<span class="sc">$</span>Errors)</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lasso.lm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ Hitters$AtBat + Hitters$Hits + Hitters$Walks + 
+    Hitters$Years + Hitters$CHmRun + Hitters$CRuns + Hitters$CRBI + 
+    Hitters$League + Hitters$Division + Hitters$PutOuts + Hitters$Errors)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-915.78 -180.32  -30.63  145.30 1973.34 
+
+Coefficients:
+                    Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept)        159.94390   88.78150   1.802  0.072817 .  
+Hitters$AtBat       -1.92711    0.55804  -3.453  0.000650 ***
+Hitters$Hits         7.54349    1.73852   4.339 0.0000208 ***
+Hitters$Walks        3.15576    1.26749   2.490  0.013430 *  
+Hitters$Years      -18.52875   10.39666  -1.782  0.075928 .  
+Hitters$CHmRun       0.18395    0.83247   0.221  0.825295    
+Hitters$CRuns        0.38700    0.22098   1.751  0.081122 .  
+Hitters$CRBI         0.48424    0.36663   1.321  0.187771    
+Hitters$LeagueN     34.79937   41.43369   0.840  0.401774    
+Hitters$DivisionW -118.99843   39.98939  -2.976  0.003208 ** 
+Hitters$PutOuts      0.26517    0.07611   3.484  0.000583 ***
+Hitters$Errors       0.09014    3.38713   0.027  0.978790    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 319.4 on 251 degrees of freedom
+Multiple R-squared:  0.5197,    Adjusted R-squared:  0.4987 
+F-statistic: 24.69 on 11 and 251 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: carData</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vif</span>(lasso.lm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Hitters$AtBat     Hitters$Hits    Hitters$Walks    Hitters$Years 
+       17.353288        15.805338         1.945959         6.378525 
+  Hitters$CHmRun    Hitters$CRuns     Hitters$CRBI   Hitters$League 
+       12.024251        13.756427        36.094825         1.102790 
+Hitters$Division  Hitters$PutOuts   Hitters$Errors 
+        1.030227         1.165751         1.285945 </code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
