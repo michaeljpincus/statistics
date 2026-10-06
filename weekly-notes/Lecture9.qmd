@@ -200,19 +200,19 @@ We can see as $\lambda$ gets larger, variance shrinks but MSE and bias grows. Th
 
 ### OLS vs Ridge
 
-+--------------------------------------------------------------------------------------------------------+--------------------------------------------------+
-| OLS wins                                                                                               | Ridge wins                                       |
-+========================================================================================================+==================================================+
-| Lots of data, few features                                                                             | You want to predict new data                     |
-|                                                                                                        |                                                  |
-| Care about unbiased coefficient estimates or classical inference (SE, confidence intervals, p-values)  | Features are highly correlated                   |
-|                                                                                                        |                                                  |
-| Care about interpretability                                                                            | You have many features relative to observations  |
-|                                                                                                        |                                                  |
-|                                                                                                        | OLS fit is noisy or unstable                     |
-+--------------------------------------------------------------------------------------------------------+--------------------------------------------------+
++-------------------------------------------------------------------------------------------------------+-------------------------------------------------+
+| OLS wins                                                                                              | Ridge wins                                      |
++=======================================================================================================+=================================================+
+| Lots of data, few features                                                                            | You want to predict new data                    |
+|                                                                                                       |                                                 |
+| Care about unbiased coefficient estimates or classical inference (SE, confidence intervals, p-values) | Features are highly correlated                  |
+|                                                                                                       |                                                 |
+| Care about interpretability                                                                           | You have many features relative to observations |
+|                                                                                                       |                                                 |
+|                                                                                                       | OLS fit is noisy or unstable                    |
++-------------------------------------------------------------------------------------------------------+-------------------------------------------------+
 
-### Ridge regression interpretation 
+### Ridge regression interpretation
 
 We can show that ridge regression doesn't set coefficients exactly to zero unless $\lambda = \infty$, in which case they're all 0. While ridge regression performs well in terms of prediction accuracy, it does poorly in terms of offering a clear interpretation.
 
@@ -226,7 +226,7 @@ In summary:
 
 An important limitation is that ridge regression is it will include all $k$ predictors in the final model (unlike the stepwise linear regression that we saw before).
 
-## Lasso Regression 
+## Lasso Regression
 
 Lasso is like ridge, but it can set the values of certain coefficients to exactly 0 for different values of $\lambda$ and therefore exclude them. It stands for Least Absolute Shrinkage and Selection Operator.
 
@@ -250,13 +250,13 @@ In summary:
 
 - For the optimal value of $\lambda$, we will look at the plots of coefficients against $\lambda$ to figure out which variables have the greatest predictive power.
 
-## Comparing Ridge and Lasso regression 
+## Comparing Ridge and Lasso regression
 
 Lasso regression has a major advantage over ridge, in that it is able to produce simpler and more interpretable models that involve only a subset of the predictors. However, one is not inherently better than the other.
 
 Lasso will perform better where a relatively small \# of predictors have substantial coefficients, and the remaining predictors have coefficients that are very small or equal zero
 
-## Example in R 
+## Example in R
 
 ```{r}
 library(ISLR)
@@ -288,7 +288,7 @@ ggplot(df, aes(x = index, y = lambda)) +
   geom_point() + theme_minimal()
 ```
 
-### Ridge regression 
+### Ridge regression
 
 ```{r}
 ridge.mod=glmnet(x,y,alpha=0,lambda=grid)
@@ -309,7 +309,7 @@ cbind(coef(ridge.mod)[,1], coef(ridge.mod)[,50], coef(ridge.mod)[,100])
 mean(y)
 ```
 
-### Training and validation 
+### Training and validation
 
 ```{r}
 set.seed(1)
